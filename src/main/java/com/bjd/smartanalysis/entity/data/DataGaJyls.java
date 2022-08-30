@@ -9,18 +9,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("data_bank")
+@TableName("data_ga_jyls")
 @ExcelIgnoreUnannotated
-public class DataBank {
+public class DataGaJyls {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @TableField("project_id")
     private Integer projectId;
-
     @TableField("group_id")
     private Integer groupId;
-
     @TableField("user_id")
     private Integer userId;
 
@@ -73,8 +71,8 @@ public class DataBank {
     private String JDBZ;
 
     @ExcelProperty(value = "币种")
-    @TableField("BZ")
-    private String BZ;
+    @TableField("BIZ")
+    private String BIZ;
 
     @ExcelProperty(value = "交易金额")
     @TableField("JYJE")
@@ -104,18 +102,6 @@ public class DataBank {
     @TableField("JYDFKH")
     private String JYDFKH;
 
-    @ExcelProperty(value = "交易对方证件号码")
-    @TableField("JYDFZJHM")
-    private String JYDFZJHM;
-
-    @ExcelProperty(value = "交易对手余额")
-    @TableField("JYDSYE")
-    private String JYDSYE;
-
-    @ExcelProperty(value = "交易对方账号开户行")
-    @TableField("JYDFZHKHH")
-    private String JYDFZHKHH;
-
     @ExcelProperty(value = "交易摘要")
     @TableField("JYZY")
     private String JYZY;
@@ -128,59 +114,11 @@ public class DataBank {
     @TableField("JYWDDM")
     private String JYWDDM;
 
-    @ExcelProperty(value = "日志号")
-    @TableField("RZH")
-    private String RZH;
-
-    @ExcelProperty(value = "传票号")
-    @TableField("CPH")
-    private String CPH;
-
-    @ExcelProperty(value = "凭证种类")
-    @TableField("PZZL")
-    private String PZZL;
-
-    @ExcelProperty(value = "凭证号")
-    @TableField("PZH")
-    private String PZH;
-
-    @ExcelProperty(value = "现金标志")
-    @TableField("XJBZ")
-    private String XJBZ;
-
-    @ExcelProperty(value = "终端号")
-    @TableField("ZDH")
-    private String ZDH;
-
-    @ExcelProperty(value = "交易是否成功")
-    @TableField("JYSFCG")
-    private String JYSFCG;
-
-    @ExcelProperty(value = "交易发生地")
-    @TableField("JYFSD")
-    private String JYFSD;
-
-    @ExcelProperty(value = "商户名称")
-    @TableField("SHMC")
-    private String SHMC;
-
-    @ExcelProperty(value = "商户号")
-    @TableField("SHH")
-    private String SHH;
-
-    @ExcelProperty(value = "IP地址")
-    @TableField("IPDZ")
-    private String IPDZ;
-
-    @ExcelProperty(value = "MAC地址")
-    @TableField("MACDZ")
-    private String MACDZ;
-
     @ExcelProperty(value = "交易柜员号")
     @TableField("JYGYH")
     private String JYGYH;
 
     @ExcelProperty(value = "备注")
-    @TableField("REMARK")
-    private String REMARK;
+    @TableField("BZ")
+    private String BZ;
 }
