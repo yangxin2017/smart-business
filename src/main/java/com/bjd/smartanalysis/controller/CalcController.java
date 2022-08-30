@@ -77,28 +77,11 @@ public class CalcController {
             if(p.getSfMbr() == null || !p.getSfMbr()) {
                 continue;
             }
+
             String mbrName = p.getXM();
             String nullName = "空";
-            Map<String, List<DataBank>> zd = new HashMap<>();
+            Map<String, List<DataBank>> zd = GroupMbrBankInfo(banks, mbrName, nullName);
 
-            for (DataBank bk : banks) {
-                if(bk.getCXDXMC().equals(mbrName)) {
-                    String dfName = bk.getJYDFMC();
-                    if(dfName.equals("")) {
-                        if(!zd.containsKey(nullName)) {
-                            zd.put(nullName, new ArrayList<>());
-                        }
-                        List<DataBank> arr = zd.get(nullName);
-                        arr.add(bk);
-                    } else {
-                        if(!zd.containsKey(dfName)) {
-                            zd.put(dfName, new ArrayList<>());
-                        }
-                        List<DataBank> arr = zd.get(dfName);
-                        arr.add(bk);
-                    }
-                }
-            }
             Set<String> keys = zd.keySet();
 
             GraphNode snode = nodeService.GetNodeByNodeIdAndType(projectId, p.getId(), "PERSON");
@@ -111,8 +94,9 @@ public class CalcController {
                 snode.setGroupId(mbGroup);
                 nodeService.save(snode);
             }
+            // k 包含 ：对方用户名（公司名）、卡号、账号、空
             for (String k: keys) {
-                // 自己给自己转账。。
+                // 自己给自己转账。。暂不处理
                 if (k.equals(p.getXM())) {
                 } else {
                     JSONObject nodeInfo = GetNodeType(k, persons, companys);
@@ -181,8 +165,16 @@ public class CalcController {
             // 反向查询
             zd = new HashMap<>();
             for (DataBank bk : banks) {
-                if(bk.getJYDFMC().equals(mbrName)) {
-                    String dfName = bk.getCXDXMC();
+                String tmpMc = bk.getJYDFMC();
+                if(tmpMc == null) {
+                    tmpMc = "";
+                }
+                if(tmpMc.equals(mbrName)) {
+                    JSONObject dfNameObj = this.GetMCReverse(bk);
+                    String dfName = dfNameObj.getString("value");
+                    if (dfName == null) {
+                        dfName = "";
+                    }
                     if(dfName.equals("")) {
                         if(!zd.containsKey(nullName)) {
                             zd.put(nullName, new ArrayList<>());
@@ -286,6 +278,85 @@ public class CalcController {
         }
         return id;
     }
+
+    private Map<String, List<DataBank>> GroupMbrBankInfo(List<DataBank> banks, String mbrName, String nullName) {
+        Map<String, List<DataBank>> zd = new HashMap<>();
+
+        for (DataBank bk : banks) {
+            String mcstr = bk.getMC();
+            if (mcstr == null) {
+                mcstr = "";
+            }
+            if(mcstr.equals(mbrName)) {
+                JSONObject dfNameObj = this.GetJYDFMC(bk);
+                String dfName = dfNameObj.getString("value");
+                if(dfName.equals("")) {
+                    if(!zd.containsKey(nullName)) {
+                        zd.put(nullName, new ArrayList<>());
+                    }
+                    List<DataBank> arr = zd.get(nullName);
+                    arr.add(bk);
+                } else {
+                    if(!zd.containsKey(dfName)) {
+                        zd.put(dfName, new ArrayList<>());
+                    }
+                    List<DataBank> arr = zd.get(dfName);
+                    arr.add(bk);
+                }
+            }
+        }
+        return zd;
+    }
+
+    private JSONObject GetJYDFMC(DataBank bk) {
+        String mc = bk.getJYDFMC();
+        JSONObject res = new JSONObject();
+        if (mc != null && !mc.equals("")) {
+            res.put("type", "MC");
+            res.put("value", mc);
+        } else {
+            String kh = bk.getJYDFKH();
+            if (kh != null && !kh.equals("")) {
+                res.put("type", "KH");
+                res.put("value", kh);
+            } else {
+                String zh = bk.getJYDFZH();
+                if (zh != null && !zh.equals("")) {
+                    res.put("type", "ZH");
+                    res.put("value", zh);
+                } else {
+                    res.put("type", "NULL");
+                    res.put("value", "");
+                }
+            }
+        }
+        return res;
+    }
+    private JSONObject GetMCReverse(DataBank bk) {
+        String mc = bk.getMC();
+        JSONObject res = new JSONObject();
+        if (mc != null && !mc.equals("")) {
+            res.put("type", "MC");
+            res.put("value", mc);
+        } else {
+            String kh = bk.getJYDFKH();
+            if (kh != null && !kh.equals("")) {
+                res.put("type", "KH");
+                res.put("value", kh);
+            } else {
+                String zh = bk.getJYDFZH();
+                if (zh != null && !zh.equals("")) {
+                    res.put("type", "ZH");
+                    res.put("value", zh);
+                } else {
+                    res.put("type", "NULL");
+                    res.put("value", "");
+                }
+            }
+        }
+        return res;
+    }
+
     private JSONObject GetNodeType(String name, List<DataGaRydzda> persons, List<DataGaJgfrxx> companys) {
         JSONObject obj = new JSONObject();
         String nodeType = "NULL";
