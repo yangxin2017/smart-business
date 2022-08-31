@@ -25,6 +25,9 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
     @Override
     public void invoke(DataBank dataBank, AnalysisContext analysisContext) {
         dataBank.setProjectId(projectId);
+        /*if (dataBank.getBFZH() == null) {
+            dataBank.setBFZH("空");
+        }*/
         if (dataBank.getJDBZ().equals("进")) {
             if (Float.parseFloat(dataBank.getJYJE()) >= 0) {
                 dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
@@ -38,7 +41,7 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
                 dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
             }
         } else {
-            DataBank lastBank = null;
+            /*DataBank lastBank = null;
             // 获取bankList中最后一条BFKH为BFKH的数据
             for (int i = 0; i < bankList.size(); i++) {
                 if (bankList.get(i).getBFZH().equals(dataBank.getBFZH())) {
@@ -62,7 +65,7 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
                         dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
                     }
                 }
-            }
+            }*/
         }
 
         bankList.add(dataBank);
