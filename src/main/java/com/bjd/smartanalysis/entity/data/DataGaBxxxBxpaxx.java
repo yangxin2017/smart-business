@@ -57,12 +57,12 @@ public class DataGaBxxxBxpaxx {
     private String CXYY;
     // 赔款支付账号
     @ExcelProperty(value = "赔款支付账号")
-    @TableField("PZZH")
-    private String PZZH;
+    @TableField("PKZFZH")
+    private String PKZFZH;
     // 赔付金额
     @ExcelProperty(value = "赔付金额")
-    @TableField("PFK")
-    private String PFK;
+    @TableField("PFJE")
+    private String PFJE;
     // 赔付日期
     @ExcelProperty(value = "赔付日期")
     @TableField("PFRQ")

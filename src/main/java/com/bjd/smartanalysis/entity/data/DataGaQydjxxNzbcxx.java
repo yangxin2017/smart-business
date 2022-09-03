@@ -72,8 +72,8 @@ public class DataGaQydjxxNzbcxx {
     private String SCJYDSZXZQH;
     // 生产经营地
     @ExcelProperty(value = "生产经营地")
-    @TableField("SCJYDS")
-    private String SCJYDS;
+    @TableField("SCJYD")
+    private String SCJYD;
     // 核算方式
     @ExcelProperty(value = "核算方式")
     @TableField("HSFS")
@@ -100,19 +100,19 @@ public class DataGaQydjxxNzbcxx {
     private String JYFS;
     // 合伙人数
     @ExcelProperty(value = "合伙人数")
-    @TableField("HHRSC")
-    private String HHRSC;
+    @TableField("HHRS")
+    private String HHRS;
     // 有限合伙人数
     @ExcelProperty(value = "有限合伙人数")
-    @TableField("YXHHRSC")
-    private String YXHHRSC;
+    @TableField("YXHHRS")
+    private String YXHHRS;
     // 合伙方式
     @ExcelProperty(value = "合伙方式")
     @TableField("HHFS")
     private String HHFS;
     // 执行人数
     @ExcelProperty(value = "执行人数")
-    @TableField("ZXRSC")
-    private String ZXRSC;
+    @TableField("ZXRS")
+    private String ZXRS;
 
 }

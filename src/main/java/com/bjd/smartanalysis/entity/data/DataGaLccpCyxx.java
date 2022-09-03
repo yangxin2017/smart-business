@@ -24,8 +24,8 @@ public class DataGaLccpCyxx {
 
     // 产品登记编码
     @ExcelProperty(value = "产品登记编码")
-    @TableField("CPDJBH")
-    private String CPDJBH;
+    @TableField("CPDJBM")
+    private String CPDJBM;
     // 持有日期
     @ExcelProperty(value = "持有日期")
     @TableField("CYRQ")

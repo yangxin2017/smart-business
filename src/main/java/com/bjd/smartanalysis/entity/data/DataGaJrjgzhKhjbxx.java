@@ -56,8 +56,8 @@ public class DataGaJrjgzhKhjbxx {
     private String CXSJHM;
     // 是否有财产
     @ExcelProperty(value = "是否有财产")
-    @TableField("SFYC")
-    private String SFYC;
+    @TableField("SFYCC")
+    private String SFYCC;
     // 客户名称
     @ExcelProperty(value = "客户名称")
     @TableField("KHMC")

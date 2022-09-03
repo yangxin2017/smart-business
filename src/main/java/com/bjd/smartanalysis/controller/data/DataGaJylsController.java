@@ -66,6 +66,6 @@ public class DataGaJylsController {
     @ApiOperation(value = "导出所有数据", notes = "导出所有数据")
     public void ExportExcel(HttpServletResponse response, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
-        controller.ExportExcel("人员电子档案", DataGaJyls.class, response);
+        controller.ExportExcel("金融机构交易流水", DataGaJyls.class, response);
     }
 }

@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("data_ga_auto_zrzybqg_fdcq")
+@TableName("data_ga_auto_zrzyqg_fdcq")
 @ExcelIgnoreUnannotated
 public class DataGaZrzybqgFdcq {
     @TableId(value = "id", type = IdType.AUTO)

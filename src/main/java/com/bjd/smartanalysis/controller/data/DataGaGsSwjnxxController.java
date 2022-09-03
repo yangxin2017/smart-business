@@ -1,10 +1,10 @@
 package com.bjd.smartanalysis.controller.data;
 
 import com.bjd.smartanalysis.common.ResponseData;
-import com.bjd.smartanalysis.entity.data.DataGaTltxrTxryxx;
+import com.bjd.smartanalysis.entity.data.DataGaGsSwjnxx;
 import com.bjd.smartanalysis.service.DataFileService;
 import com.bjd.smartanalysis.service.DataTypeService;
-import com.bjd.smartanalysis.service.data.DataGaTltxrTxryxxService;
+import com.bjd.smartanalysis.service.data.DataGaGsSwjnxxService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,10 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Api(value = "铁路同行人-同行人员信息", tags = {"铁路同行人-同行人员信息"})
-@RequestMapping("tltxrTxryxx")
+@Api(value = "国税-税务缴纳信息", tags = {"国税-税务缴纳信息"})
+@RequestMapping("gsSwjnxx")
 @RestController
-public class DataGaTltxrTxryxxController {
+public class DataGaGsSwjnxxController {
     @Value("${file.upload.path}")
     private String basePath;
 
@@ -29,16 +29,16 @@ public class DataGaTltxrTxryxxController {
     @Autowired
     private DataFileService fileService;
     @Autowired
-    private DataGaTltxrTxryxxService service;
+    private DataGaGsSwjnxxService service;
 
-    private DataBaseController<DataGaTltxrTxryxx> controller;
+    private DataBaseController<DataGaGsSwjnxx> controller;
 
     @PostMapping("upload")
     @ApiOperation(value = "上传数据", notes = "上传数据")
     @ApiImplicitParams({@ApiImplicitParam(name = "file", value = "文件流对象", required = true, dataType = "__File")})
     private ResponseData UploadData(@RequestParam("file") MultipartFile file, Integer bid, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
-        return controller.UploadData(file, bid, DataGaTltxrTxryxx.class);
+        return controller.UploadData(file, bid, DataGaGsSwjnxx.class);
     }
 
     @GetMapping("list")
@@ -50,7 +50,7 @@ public class DataGaTltxrTxryxxController {
 
     @PostMapping("update")
     @ApiOperation(value = "更新数据", notes = "更新数据")
-    public ResponseData UpdateData(@RequestBody DataGaTltxrTxryxx body, Integer projectId){
+    public ResponseData UpdateData(@RequestBody DataGaGsSwjnxx body, Integer projectId){
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
         return controller.UpdateData(body);
     }
@@ -66,6 +66,6 @@ public class DataGaTltxrTxryxxController {
     @ApiOperation(value = "导出所有数据", notes = "导出所有数据")
     public void ExportExcel(HttpServletResponse response, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
-        controller.ExportExcel("铁路同行人-同行人员信息", DataGaTltxrTxryxx.class, response);
+        controller.ExportExcel("国税-税务缴纳信息", DataGaGsSwjnxx.class, response);
     }
 }

@@ -56,8 +56,8 @@ public class DataGaQydjxxZrrczxx {
     private String ZTSFDM;
     // 自然人姓名
     @ExcelProperty(value = "自然人姓名")
-    @TableField("ZRRSXM")
-    private String ZRRSXM;
+    @TableField("ZRRXM")
+    private String ZRRXM;
     // 自然人证件类型
     @ExcelProperty(value = "自然人证件类型")
     @TableField("ZRRZJLX")

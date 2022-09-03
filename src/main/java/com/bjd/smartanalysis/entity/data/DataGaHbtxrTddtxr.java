@@ -68,12 +68,12 @@ public class DataGaHbtxrTddtxr {
     private String DDJC;
     // 预计到达日期
     @ExcelProperty(value = "预计到达日期")
-    @TableField("YJDRRQ")
-    private String YJDRRQ;
+    @TableField("YJDDRQ")
+    private String YJDDRQ;
     // 预计到达时间
     @ExcelProperty(value = "预计到达时间")
-    @TableField("YJDSJ")
-    private String YJDSJ;
+    @TableField("YJDDSJ")
+    private String YJDDSJ;
     // 同行人座位号
     @ExcelProperty(value = "同行人座位号")
     @TableField("TXRZWH")

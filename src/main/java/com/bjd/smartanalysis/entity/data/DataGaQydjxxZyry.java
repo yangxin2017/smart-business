@@ -80,8 +80,8 @@ public class DataGaQydjxxZyry {
     private String ZW;
     // 职务产生方式
     @ExcelProperty(value = "职务产生方式")
-    @TableField("ZWCSCSFS")
-    private String ZWCSCSFS;
+    @TableField("ZWCSFS")
+    private String ZWCSFS;
     // 申请前职业状况
     @ExcelProperty(value = "申请前职业状况")
     @TableField("SQQZYZK")

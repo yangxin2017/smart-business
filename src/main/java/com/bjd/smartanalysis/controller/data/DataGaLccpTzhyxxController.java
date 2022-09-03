@@ -66,6 +66,6 @@ public class DataGaLccpTzhyxxController {
     @ApiOperation(value = "导出所有数据", notes = "导出所有数据")
     public void ExportExcel(HttpServletResponse response, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
-        controller.ExportExcel("人员电子档案", DataGaLccpTzhyxx.class, response);
+        controller.ExportExcel("理财产品-投资行业信息", DataGaLccpTzhyxx.class, response);
     }
 }

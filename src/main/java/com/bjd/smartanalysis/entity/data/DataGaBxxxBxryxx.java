@@ -60,8 +60,8 @@ public class DataGaBxxxBxryxx {
     private String TBRMC;
     // 被保险人名称
     @ExcelProperty(value = "被保险人名称")
-    @TableField("BXRMC")
-    private String BXRMC;
+    @TableField("BBXRMC")
+    private String BBXRMC;
     // 受益人名称
     @ExcelProperty(value = "受益人名称")
     @TableField("SYRMC")

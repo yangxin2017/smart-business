@@ -80,8 +80,8 @@ public class DataGaLccpLccpxx {
     private String CPMC;
     // 产品登记编码
     @ExcelProperty(value = "产品登记编码")
-    @TableField("CPDJBH")
-    private String CPDJBH;
+    @TableField("CPDJBM")
+    private String CPDJBM;
     // 产品运作模式
     @ExcelProperty(value = "产品运作模式")
     @TableField("CPYZMS")
@@ -116,8 +116,8 @@ public class DataGaLccpLccpxx {
     private String YJKHZGNSYL;
     // 业绩比较基准
     @ExcelProperty(value = "业绩比较基准")
-    @TableField("YJBJZ")
-    private String YJBJZ;
+    @TableField("YJBJJZ")
+    private String YJBJJZ;
     // 是否结构化（分级）产品
     @ExcelProperty(value = "是否结构化（分级）产品")
     @TableField("SFJGHFJCP")
