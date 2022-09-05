@@ -138,12 +138,36 @@ public class DataBankController {
 
     @GetMapping("list")
     @ApiOperation(value = "获取数据列表", notes = "获取数据列表")
-    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId) {
+    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId, String mc,String zjhm,String cxkh,String jyje,String jydfmc,String jydfkh,String jydfzjhm) {
         IPage<DataBank> page = new Page<>(pageIndex, pageSize);
         QueryWrapper<DataBank> queryWrapper = new QueryWrapper<>();
-        // 查询条件，判断是否NULL
-        if (projectId != null) {
-            queryWrapper.eq("project_id", projectId);
+
+        queryWrapper.eq("project_id", projectId);
+        if(mc != null && !mc.isEmpty()) {
+            queryWrapper.like("MC", mc);
+        }
+        if(zjhm != null && !zjhm.isEmpty()) {
+            queryWrapper.like("ZJHM", zjhm);
+        }
+        if(cxkh != null && !cxkh.isEmpty()) {
+            queryWrapper.like("CXKH", cxkh);
+        }
+        if(jyje != null && !jyje.isEmpty()) {
+            String[] jyjeArr = jyje.split("-");
+            if(jyjeArr.length == 1) {
+                queryWrapper.ge("JYJE", Float.parseFloat(jyjeArr[0]));
+            }else if(jyjeArr.length == 2) {
+                queryWrapper.between("JYJE", Float.parseFloat(jyjeArr[0]), Float.parseFloat(jyjeArr[1]));
+            }
+        }
+        if(jydfmc != null && !jydfmc.isEmpty()) {
+            queryWrapper.like("JYDFMC", jydfmc);
+        }
+        if(jydfkh != null && !jydfkh.isEmpty()) {
+            queryWrapper.like("JYDFKH", jydfkh);
+        }
+        if(jydfzjhm != null && !jydfzjhm.isEmpty()) {
+            queryWrapper.like("JYDFZJHM", jydfzjhm);
         }
 
         page = bankService.page(page, queryWrapper);
