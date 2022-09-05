@@ -141,7 +141,11 @@ public class DataBankController {
     private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId) {
         IPage<DataBank> page = new Page<>(pageIndex, pageSize);
         QueryWrapper<DataBank> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("project_id", projectId);
+        // 查询条件，判断是否NULL
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+
         page = bankService.page(page, queryWrapper);
         return ResponseData.OK(page);
     }
