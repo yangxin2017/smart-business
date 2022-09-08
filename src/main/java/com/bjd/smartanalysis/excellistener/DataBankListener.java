@@ -68,7 +68,13 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
             }*/
         }
 
-        bankList.add(dataBank);
+        // 数据库中是否包含与dataBank相同的数据
+        boolean isExist = bankService.isExist(projectId,dataBank);
+        if(!isExist){
+            bankList.add(dataBank);
+        }
+
+        /*bankList.add(dataBank);*/
     }
 
     @Override
