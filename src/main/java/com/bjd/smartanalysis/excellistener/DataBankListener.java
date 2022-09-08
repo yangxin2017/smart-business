@@ -28,19 +28,20 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
         /*if (dataBank.getBFZH() == null) {
             dataBank.setBFZH("空");
         }*/
-        if (dataBank.getJDBZ().equals("进")) {
-            if (Float.parseFloat(dataBank.getJYJE()) >= 0) {
-                dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
+        if(dataBank.getJDBZ()!=null){
+            if (dataBank.getJDBZ().equals("进")) {
+                if (Float.parseFloat(dataBank.getJYJE()) >= 0) {
+                    dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
+                } else {
+                    dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE()) * -1));
+                }
+            } else if (dataBank.getJDBZ().equals("出")) {
+                if (Float.parseFloat(dataBank.getJYJE()) > 0) {
+                    dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE()) * -1));
+                } else {
+                    dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
+                }
             } else {
-                dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE()) * -1));
-            }
-        } else if (dataBank.getJDBZ().equals("出")) {
-            if (Float.parseFloat(dataBank.getJYJE()) > 0) {
-                dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE()) * -1));
-            } else {
-                dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
-            }
-        } else {
             /*DataBank lastBank = null;
             // 获取bankList中最后一条BFKH为BFKH的数据
             for (int i = 0; i < bankList.size(); i++) {
@@ -66,6 +67,7 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
                     }
                 }
             }*/
+            }
         }
 
         // 数据库中是否包含与dataBank相同的数据

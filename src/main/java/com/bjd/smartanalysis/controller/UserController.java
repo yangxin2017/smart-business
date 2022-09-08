@@ -48,14 +48,21 @@ public class UserController {
 
             Map<String, String> header = new HashMap<>();
             header.put("tenantId", tenandId.toString());
+            header.put("tenantID", tenandId.toString());
+            header.put("TenantId", tenandId.toString());
             header.put("token", token);
 
             Map<String, Object> params = new HashMap<>();
             params.put("tenantId", tenandId);
+            params.put("tenantID", tenandId);
             params.put("token", token);
+            params.put("TenantId", tenandId);
 
-            String userurl = apiPath + "api/oauth/anyTenant/userInfo?token=" + tokenstr + "&tenantID=" + tenandId;
-            JSONObject userInfoResObj = JSONObject.parseObject(HttpUtil.get(userurl));
+            // String userurl = apiPath + "api/oauth/anyTenant/userInfo?token=" + tokenstr + "&tenantID=" + tenandId;
+            String userurl = apiPath + "api/oauth/anyTenant/userInfo";
+            String resstruser = HttpUtil.createGet(userurl).addHeaders(header).form(params).execute().body();
+
+            JSONObject userInfoResObj = JSONObject.parseObject(resstruser);//JSONObject.parseObject(HttpUtil.get(userurl));
             if (userInfoResObj.getInteger("code") == 0) {
                 JSONObject userInfoObj = userInfoResObj.getJSONObject("data").getJSONObject("userInfo");
                 String nickname = userInfoObj.getString("nickName");
@@ -63,7 +70,7 @@ public class UserController {
 
                 String groupurl = apiPath + "api/liangziyun/anyone/findAllUserGroup";
 
-                String resstr = HttpUtil.createGet(groupurl).addHeaders(header).form(params).execute().body();
+                String resstr = HttpUtil.createPost(groupurl).addHeaders(header).form(params).execute().body();
                 JSONArray groupObj = JSONArray.parseArray(resstr);
 
                 Long comGroupId = -1l;
