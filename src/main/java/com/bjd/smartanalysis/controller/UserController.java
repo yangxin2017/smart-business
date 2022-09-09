@@ -71,36 +71,40 @@ public class UserController {
                 String groupurl = apiPath + "api/liangziyun/anyone/findAllUserGroup";
 
                 String resstr = HttpUtil.createPost(groupurl).addHeaders(header).form(params).execute().body();
-                JSONArray groupObj = JSONArray.parseArray(resstr);
+                JSONObject obj = JSONObject.parseObject(resstr);
 
-                Long comGroupId = -1l;
-                SysGroup group = null;
-                Long groupId = Math.abs(RandomUtil.randomLong());
-                if(groupObj.size() > 0) {
-                    JSONObject gobj = groupObj.getJSONObject(0);
-                    comGroupId = gobj.getLong("id");
-                    group = groupService.GetGroupByComeGroupId(comGroupId);
-                    ////
-                    if (group == null) {
-                        group = new SysGroup();
-                        group.setComeGroupId(comGroupId);
-                        group.setGroupId(groupId);
-                        groupService.save(group);
-                    } else {
-                        groupId = group.getGroupId();
+                if(obj.getInteger("code") == 0) {
+                    JSONArray groupObj = obj.getJSONArray("data");
+
+                    Long comGroupId = -1l;
+                    SysGroup group = null;
+                    Long groupId = Math.abs(RandomUtil.randomLong());
+                    if(groupObj.size() > 0) {
+                        JSONObject gobj = groupObj.getJSONObject(0);
+                        comGroupId = gobj.getLong("id");
+                        group = groupService.GetGroupByComeGroupId(comGroupId);
+                        ////
+                        if (group == null) {
+                            group = new SysGroup();
+                            group.setComeGroupId(comGroupId);
+                            group.setGroupId(groupId);
+                            groupService.save(group);
+                        } else {
+                            groupId = group.getGroupId();
+                        }
                     }
-                }
-                comUser = userService.getById(userId);
-                if (comUser == null) {
-                    comUser = new SysUser();
-                    comUser.setId(userId);
-                    comUser.setTenandId(tenandId);
-                    comUser.setGroupId(groupId);
-                    comUser.setUsername(userName);
-                    comUser.setPassword("******");
-                    comUser.setNickname(nickname);
-                    comUser.setCtime(new Date());
-                    userService.save(comUser);
+                    comUser = userService.getById(userId);
+                    if (comUser == null) {
+                        comUser = new SysUser();
+                        comUser.setId(userId);
+                        comUser.setTenandId(tenandId);
+                        comUser.setGroupId(groupId);
+                        comUser.setUsername(userName);
+                        comUser.setPassword("******");
+                        comUser.setNickname(nickname);
+                        comUser.setCtime(new Date());
+                        userService.save(comUser);
+                    }
                 }
             }
             return ResponseData.OK(comUser);
