@@ -65,8 +65,9 @@ public class UserController {
             JSONObject userInfoResObj = JSONObject.parseObject(resstruser);//JSONObject.parseObject(HttpUtil.get(userurl));
             if (userInfoResObj.getInteger("code") == 0) {
                 JSONObject userInfoObj = userInfoResObj.getJSONObject("data").getJSONObject("userInfo");
-                String nickname = userInfoObj.getString("nickName");
-                String userName = userInfoObj.getString("username");
+                JSONObject defUserInfo = userInfoObj.getJSONObject("defUser");
+                String nickname = defUserInfo.getString("nickName");
+                String userName = defUserInfo.getString("username");
 
                 String groupurl = apiPath + "api/liangziyun/anyone/findAllUserGroup";
 
