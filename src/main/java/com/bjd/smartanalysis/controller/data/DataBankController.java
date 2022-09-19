@@ -51,22 +51,24 @@ public class DataBankController {
     @ApiOperation(value = "上传数据", notes = "上传数据")
     @ApiImplicitParams({@ApiImplicitParam(name = "file", value = "文件流对象", required = true, dataType = "__File")})
     private ResponseData UploadData(@RequestParam("file") MultipartFile file, Integer bid, Integer projectId){
+        // 获取文件名
+        String fileName = file.getOriginalFilename();
         if (file.isEmpty() || bid == null) {
             return ResponseData.FAIL("没有选择文件");
         }
         DataType dtype = dataTypeService.getById(bid);
         if (dtype == null) {
-            return ResponseData.FAIL("数据类型不存在");
+            return ResponseData.FAIL(fileName+",数据类型不存在");
         }
         if(!SaveFileToDatabase(file, projectId)){
-            return ResponseData.FAIL("数据导入失败");
+            return ResponseData.FAIL(fileName+",数据导入失败");
         }
 
         DataFile df = UploadUtil.Upload(file, basePath, bid);
         if (df != null) {
             fileService.save(df);
         } else {
-            return ResponseData.FAIL("文件上传失败");
+            return ResponseData.FAIL(fileName+",文件上传失败");
         }
 
         return ResponseData.OK(null);

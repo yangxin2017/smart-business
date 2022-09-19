@@ -417,6 +417,15 @@ public class CalcController {
             JSONObject obj = new JSONObject();
             obj.put("groupId", line.getGroupId());
             obj.put("id", line.getId());
+//            // 如果line.getName()转为float类型小于0
+//            if (Float.parseFloat(line.getName()) < 0) {
+//                line.setName(Float.parseFloat(line.getName()) * -1 + "");
+//                obj.put("sid", line.getEid());
+//                obj.put("eid", line.getSid());
+//            }else{
+//                obj.put("sid", line.getSid());
+//                obj.put("eid", line.getEid());
+//            }
             obj.put("sid", line.getSid());
             obj.put("eid", line.getEid());
             obj.put("name", line.getName());

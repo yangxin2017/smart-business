@@ -32,7 +32,7 @@ public class DataFileTypeController {
     @GetMapping("relation")
     @ApiOperation(value = "获取亲属关系列表", notes = "获取亲属关系列表")
     public ResponseData GetRelationList() {
-        String[] relas = {"父子", "母子", "夫妻", "兄弟", "姐妹"};
+        String[] relas = {"父子", "母子", "夫妻", "兄弟", "姐妹","密切人"};
         return ResponseData.OK(relas);
     }
 }
