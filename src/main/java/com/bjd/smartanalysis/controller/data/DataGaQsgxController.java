@@ -1,6 +1,7 @@
 package com.bjd.smartanalysis.controller.data;
 
 import com.bjd.smartanalysis.common.ResponseData;
+//import com.bjd.smartanalysis.entity.data.DataGaCrjjl;
 import com.bjd.smartanalysis.entity.data.DataGaQsgx;
 import com.bjd.smartanalysis.entity.data.DataGaRydzda;
 import com.bjd.smartanalysis.entity.data.DataGaYhhcxx;
@@ -9,10 +10,13 @@ import com.bjd.smartanalysis.service.DataTypeService;
 import com.bjd.smartanalysis.service.data.DataBankService;
 import com.bjd.smartanalysis.service.data.DataGaQsgxService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,6 +49,14 @@ public class DataGaQsgxController {
     public void ExportExcel(HttpServletResponse response, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
         controller.ExportExcel("亲属关系", DataGaQsgx.class, response);
+    }
+
+    @PostMapping("upload")
+    @ApiOperation(value = "上传数据", notes = "上传数据")
+    @ApiImplicitParams({@ApiImplicitParam(name = "file", value = "文件流对象", required = true, dataType = "__File")})
+    private ResponseData UploadData(@RequestParam("file") MultipartFile file, Integer bid, Integer projectId) {
+        controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
+        return controller.UploadData(file, bid, DataGaQsgx.class);
     }
 
     @PostMapping("add")

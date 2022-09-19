@@ -1,11 +1,7 @@
+/*
 package com.bjd.smartanalysis.controller.data;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjd.smartanalysis.common.ResponseData;
-import com.bjd.smartanalysis.common.UploadUtil;
-import com.bjd.smartanalysis.entity.DataFile;
-import com.bjd.smartanalysis.entity.DataType;
 import com.bjd.smartanalysis.entity.data.DataGaRydzda;
 import com.bjd.smartanalysis.service.DataFileService;
 import com.bjd.smartanalysis.service.DataTypeService;
@@ -26,7 +22,7 @@ import java.util.List;
 @Api(value = "人员电子档案", tags = {"人员电子档案"})
 @RequestMapping("rydzda")
 @RestController
-public class DataGaRydzdaController {
+public class DataGaRydzdaControllersave {
     @Value("${file.upload.path}")
     private String basePath;
 
@@ -101,3 +97,4 @@ public class DataGaRydzdaController {
         return ResponseData.OK(user);
     }
 }
+*/

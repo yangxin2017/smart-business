@@ -1,3 +1,4 @@
+/*
 package com.bjd.smartanalysis.serviceImpl.data;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, DataGaRydzda> implements DataGaRydzdaService {
+public class DataGaRydzdaServiceImplsave extends ServiceImpl<DataGaRydzdaMapper, DataGaRydzda> implements DataGaRydzdaService {
     @Autowired
     DataGaRydzdaMapper mapper;
 
@@ -64,11 +65,11 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
         } else {
             queryWrapper.eq("XM", dataGaRydzda.getXM());
         }
-        // TXZP
-        if (dataGaRydzda.getTXZP() == null) {
-            queryWrapper.isNull("TXZP");
+        // XB
+        if (dataGaRydzda.getXB() == null) {
+            queryWrapper.isNull("XB");
         } else {
-            queryWrapper.eq("TXZP", dataGaRydzda.getTXZP());
+            queryWrapper.eq("XB", dataGaRydzda.getXB());
         }
         // SFZH
         if (dataGaRydzda.getSFZH() == null) {
@@ -76,41 +77,11 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
         } else {
             queryWrapper.eq("SFZH", dataGaRydzda.getSFZH());
         }
-        // XM
-        if (dataGaRydzda.getXM() == null) {
-            queryWrapper.isNull("XM");
-        } else {
-            queryWrapper.eq("XM", dataGaRydzda.getXM());
-        }
-        // XB
-        if (dataGaRydzda.getXB() == null) {
-            queryWrapper.isNull("XB");
-        } else {
-            queryWrapper.eq("XB", dataGaRydzda.getXB());
-        }
         // MZ
         if (dataGaRydzda.getMZ() == null) {
             queryWrapper.isNull("MZ");
         } else {
             queryWrapper.eq("MZ", dataGaRydzda.getMZ());
-        }
-        // HJD
-        if (dataGaRydzda.getHJD() == null) {
-            queryWrapper.isNull("HJD");
-        } else {
-            queryWrapper.eq("HJD", dataGaRydzda.getHJD());
-        }
-        // HJDQH
-        if (dataGaRydzda.getHJDQH() == null) {
-            queryWrapper.isNull("HJDQH");
-        } else {
-            queryWrapper.eq("HJDQH", dataGaRydzda.getHJDQH());
-        }
-        // HJDPCS
-        if (dataGaRydzda.getHJDPCS() == null) {
-            queryWrapper.isNull("HJDPCS");
-        } else {
-            queryWrapper.eq("HJDPCS", dataGaRydzda.getHJDPCS());
         }
         // CSRQ
         if (dataGaRydzda.getCSRQ() == null) {
@@ -118,23 +89,35 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
         } else {
             queryWrapper.eq("CSRQ", dataGaRydzda.getCSRQ());
         }
+        // HYZK
+        if (dataGaRydzda.getHYZK() == null) {
+            queryWrapper.isNull("HYZK");
+        } else {
+            queryWrapper.eq("HYZK", dataGaRydzda.getHYZK());
+        }
+        // SX
+        if (dataGaRydzda.getSX() == null) {
+            queryWrapper.isNull("SX");
+        } else {
+            queryWrapper.eq("SX", dataGaRydzda.getSX());
+        }
+        // XZ
+        if (dataGaRydzda.getXZ() == null) {
+            queryWrapper.isNull("XZ");
+        } else {
+            queryWrapper.eq("XZ", dataGaRydzda.getXZ());
+        }
+        // BMCH
+        if (dataGaRydzda.getBMCH() == null) {
+            queryWrapper.isNull("BMCH");
+        } else {
+            queryWrapper.eq("BMCH", dataGaRydzda.getBMCH());
+        }
         // CYM
         if (dataGaRydzda.getCYM() == null) {
             queryWrapper.isNull("CYM");
         } else {
             queryWrapper.eq("CYM", dataGaRydzda.getCYM());
-        }
-        // CSD
-        if (dataGaRydzda.getCSD() == null) {
-            queryWrapper.isNull("CSD");
-        } else {
-            queryWrapper.eq("CSD", dataGaRydzda.getCSD());
-        }
-        // JG
-        if (dataGaRydzda.getJG() == null) {
-            queryWrapper.isNull("JG");
-        } else {
-            queryWrapper.eq("JG", dataGaRydzda.getJG());
         }
         // SG
         if (dataGaRydzda.getSG() == null) {
@@ -142,35 +125,35 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
         } else {
             queryWrapper.eq("SG", dataGaRydzda.getSG());
         }
+        // XX
+        if (dataGaRydzda.getXX() == null) {
+            queryWrapper.isNull("XX");
+        } else {
+            queryWrapper.eq("XX", dataGaRydzda.getXX());
+        }
+        // ZGXL
+        if (dataGaRydzda.getZGXL() == null) {
+            queryWrapper.isNull("ZGXL");
+        } else {
+            queryWrapper.eq("ZGXL", dataGaRydzda.getZGXL());
+        }
+        // ZZMM
+        if (dataGaRydzda.getZZMM() == null) {
+            queryWrapper.isNull("ZZMM");
+        } else {
+            queryWrapper.eq("ZZMM", dataGaRydzda.getZZMM());
+        }
         // ZY
         if (dataGaRydzda.getZY() == null) {
             queryWrapper.isNull("ZY");
         } else {
             queryWrapper.eq("ZY", dataGaRydzda.getZY());
         }
-        // CSDGJ
-        if (dataGaRydzda.getCSDGJ() == null) {
-            queryWrapper.isNull("CSDGJ");
+        // CYDW
+        if (dataGaRydzda.getCYDW() == null) {
+            queryWrapper.isNull("CYDW");
         } else {
-            queryWrapper.eq("CSDGJ", dataGaRydzda.getCSDGJ());
-        }
-        // CSDQH
-        if (dataGaRydzda.getCSDQH() == null) {
-            queryWrapper.isNull("CSDQH");
-        } else {
-            queryWrapper.eq("CSDQH", dataGaRydzda.getCSDQH());
-        }
-        // JGGJ
-        if (dataGaRydzda.getJGGJ() == null) {
-            queryWrapper.isNull("JGGJ");
-        } else {
-            queryWrapper.eq("JGGJ", dataGaRydzda.getJGGJ());
-        }
-        // FWCS
-        if (dataGaRydzda.getFWCS() == null) {
-            queryWrapper.isNull("FWCS");
-        } else {
-            queryWrapper.eq("FWCS", dataGaRydzda.getFWCS());
+            queryWrapper.eq("CYDW", dataGaRydzda.getCYDW());
         }
         // BYZK
         if (dataGaRydzda.getBYZK() == null) {
@@ -178,23 +161,47 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
         } else {
             queryWrapper.eq("BYZK", dataGaRydzda.getBYZK());
         }
-        // WHCD
-        if (dataGaRydzda.getWHCD() == null) {
-            queryWrapper.isNull("WHCD");
+        // TMTZMS
+        if (dataGaRydzda.getTMTZMS() == null) {
+            queryWrapper.isNull("TMTZMS");
         } else {
-            queryWrapper.eq("WHCD", dataGaRydzda.getWHCD());
+            queryWrapper.eq("TMTZMS", dataGaRydzda.getTMTZMS());
         }
-        // HYZK
-        if (dataGaRydzda.getHYZK() == null) {
-            queryWrapper.isNull("HYZK");
+        // CSDQH
+        if (dataGaRydzda.getCSDQH() == null) {
+            queryWrapper.isNull("CSDQH");
         } else {
-            queryWrapper.eq("HYZK", dataGaRydzda.getHYZK());
+            queryWrapper.eq("CSDQH", dataGaRydzda.getCSDQH());
         }
-        // SWRQ
-        if (dataGaRydzda.getSWRQ() == null) {
-            queryWrapper.isNull("SWRQ");
+        // JG
+        if (dataGaRydzda.getJG() == null) {
+            queryWrapper.isNull("JG");
         } else {
-            queryWrapper.eq("SWRQ", dataGaRydzda.getSWRQ());
+            queryWrapper.eq("JG", dataGaRydzda.getJG());
+        }
+        // HJDQH
+        if (dataGaRydzda.getHJDQH() == null) {
+            queryWrapper.isNull("HJDQH");
+        } else {
+            queryWrapper.eq("HJDQH", dataGaRydzda.getHJDQH());
+        }
+        // HJDZ
+        if (dataGaRydzda.getHJDZ() == null) {
+            queryWrapper.isNull("HJDZ");
+        } else {
+            queryWrapper.eq("HJDZ", dataGaRydzda.getHJDZ());
+        }
+        // QTDZ
+        if (dataGaRydzda.getQTDZ() == null) {
+            queryWrapper.isNull("QTDZ");
+        } else {
+            queryWrapper.eq("QTDZ", dataGaRydzda.getQTDZ());
+        }
+        // XWBQ
+        if (dataGaRydzda.getXWBQ() == null) {
+            queryWrapper.isNull("XWBQ");
+        } else {
+            queryWrapper.eq("XWBQ", dataGaRydzda.getXWBQ());
         }
         // sf_mbr
         if (dataGaRydzda.getSfMbr() == null) {
@@ -203,7 +210,7 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
             queryWrapper.eq("sf_mbr", dataGaRydzda.getSfMbr());
         }
 
-
         return mapper.selectCount(queryWrapper) > 0;
     }
 }
+*/

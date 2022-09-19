@@ -79,6 +79,20 @@ public class DataBaseController<T> {
         return ResponseData.OK(df.getFilepath());
     }
 
+    public ResponseData GetList(Integer pageIndex, Integer pageSize, String XM, String SFZHM) {
+        IPage<T> page = new Page<>(pageIndex, pageSize);
+        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", this.projectId);
+        if(XM!=null && !XM.isEmpty()){
+            queryWrapper.like("XM",XM);
+        }
+        if(SFZHM!=null && !SFZHM.isEmpty()){
+            queryWrapper.like("SFZH",SFZHM);
+        }
+        page = service.page(page, queryWrapper);
+        return ResponseData.OK(page);
+    }
+
     public ResponseData GetList(Integer pageIndex, Integer pageSize) {
         IPage<T> page = new Page<>(pageIndex, pageSize);
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
