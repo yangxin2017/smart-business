@@ -5,16 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bjd.smartanalysis.common.ResponseData;
 import com.bjd.smartanalysis.entity.DataType;
-import com.bjd.smartanalysis.entity.data.DataBank;
-import com.bjd.smartanalysis.entity.data.DataGaJgfrxx;
-import com.bjd.smartanalysis.entity.data.DataGaRydzda;
-import com.bjd.smartanalysis.entity.data.DataProject;
+import com.bjd.smartanalysis.entity.data.*;
 import com.bjd.smartanalysis.entity.graph.GraphLine;
 import com.bjd.smartanalysis.entity.graph.GraphNode;
-import com.bjd.smartanalysis.service.data.DataBankService;
-import com.bjd.smartanalysis.service.data.DataGaJgfrxxService;
-import com.bjd.smartanalysis.service.data.DataGaRydzdaService;
-import com.bjd.smartanalysis.service.data.DataProjectService;
+import com.bjd.smartanalysis.service.data.*;
 import com.bjd.smartanalysis.service.graph.GraphLineService;
 import com.bjd.smartanalysis.service.graph.GraphNodeService;
 import io.swagger.annotations.Api;
@@ -32,6 +26,8 @@ import java.util.*;
 public class CalcController {
     @Autowired
     private DataGaRydzdaService rydzdaService;
+    @Autowired
+    private DataGaQsgxService qsgxService;
     @Autowired
     private DataBankService bankService;
     @Autowired
@@ -72,6 +68,12 @@ public class CalcController {
 
     private void CalcAndSaveNodeLine(List<DataGaRydzda> persons, List<DataBank> banks, List<DataGaJgfrxx> companys, Integer projectId) {
         Integer mbGroup = 0;
+        Integer nodeGroup = 0;
+
+        // 获取亲属关系表中project_id为projectId的所有数据
+        List<DataGaQsgx> qsgxList = qsgxService.GetAllPersonList(projectId, "");
+
+
         for(DataGaRydzda p: persons) {
             mbGroup++;
             if(p.getSfMbr() == null || !p.getSfMbr()) {
@@ -157,6 +159,37 @@ public class CalcController {
                         lineCHU.setProjectId(projectId);
                         lineCHU.setGroupId(mbGroup);
                         lineService.save(lineCHU);
+                    }
+
+
+
+
+
+
+                    // 亲属关系逻辑
+                    // 如果qsgxList中包含XM1为snode.getNodeName()，XM2为dnode.getNodeName()的数据或者XM为dnode.getNodeName()，XM2为snode.getNodeName()的数据，则给这两个节点nodeGroup赋值为nodeGroup
+                    for (DataGaQsgx qsgx : qsgxList) {
+                        if (qsgx.getXM1().equals(snode.getNodeName()) && qsgx.getXM2().equals(dnode.getNodeName())) {
+                            nodeGroup++;
+                            String nodeNumber = String.valueOf(nodeGroup);
+                            if(snode.getNodeGroup()!=null && snode.getNodeGroup().length()>0) {
+                                nodeNumber = snode.getNodeGroup();
+                            }
+                            snode.setNodeGroup(nodeNumber);
+                            dnode.setNodeGroup(nodeNumber);
+                            nodeService.updateById(snode);
+                            nodeService.updateById(dnode);
+                        } else if (qsgx.getXM1().equals(dnode.getNodeName()) && qsgx.getXM2().equals(snode.getNodeName())) {
+                            nodeGroup++;
+                            String nodeNumber = String.valueOf(nodeGroup);
+                            if(snode.getNodeGroup()!=null && snode.getNodeGroup().length()>0) {
+                                nodeNumber = snode.getNodeGroup();
+                            }
+                            snode.setNodeGroup(nodeNumber);
+                            dnode.setNodeGroup(nodeNumber);
+                            nodeService.updateById(snode);
+                            nodeService.updateById(dnode);
+                        }
                     }
                 }
             }
@@ -397,6 +430,7 @@ public class CalcController {
             obj.put("nodeType", node.getNodeType());
             obj.put("nodeId", node.getNodeId());
             obj.put("nodeName", node.getNodeName());
+            obj.put("nodeGroup", node.getNodeGroup());
             DataGaRydzda user = rydzdaService.getById(node.getNodeId());
             if (user != null) {
                 obj.put("user", user);

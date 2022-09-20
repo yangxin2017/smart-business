@@ -16,6 +16,7 @@ import com.bjd.smartanalysis.excellistener.DataBankListener;
 import com.bjd.smartanalysis.service.DataFileService;
 import com.bjd.smartanalysis.service.DataTypeService;
 import com.bjd.smartanalysis.service.data.DataBankService;
+import com.bjd.smartanalysis.service.data.SysErrorViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,13 +48,39 @@ public class DataBankController {
     private DataTypeService dataTypeService;
     @Autowired
     private DataFileService fileService;
+    @Autowired
+    private SysErrorViewService errorViewService;
 
     @PostMapping("upload")
     @ApiOperation(value = "上传数据", notes = "上传数据")
     @ApiImplicitParams({@ApiImplicitParam(name = "file", value = "文件流对象", required = true, dataType = "__File")})
     private ResponseData UploadData(@RequestParam("file") MultipartFile file, Integer bid, Integer projectId){
+        Integer eid = (int) (System.currentTimeMillis() / 1000);
         // 获取文件名
         String fileName = file.getOriginalFilename();
+        try{
+            // 获取表头列表
+            InputStream inputStream = file.getInputStream();
+            ExcelReader reader = ExcelUtil.getReader(inputStream);
+            List<List<Object>> read = reader.read();
+            List<Object> head = read.get(0);
+            List<String> titles = new ArrayList<>();
+            titles.add("名称");
+            titles.add("查询对象名称");
+            titles.add("本方账号");
+            titles.add("本方卡号");
+            titles.add("交易余额");
+            titles.add("交易金额");
+            List<String> readTitles = new ArrayList<>();
+            for (Object o : head) {
+                readTitles.add(o.toString());
+            }
+            if (!readTitles.containsAll(titles)){
+                return ResponseData.FAIL(fileName+"，上传文件模板错误");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if (file.isEmpty() || bid == null) {
             return ResponseData.FAIL("没有选择文件");
         }
@@ -60,15 +88,18 @@ public class DataBankController {
         if (dtype == null) {
             return ResponseData.FAIL(fileName+",数据类型不存在");
         }
-        if(!SaveFileToDatabase(file, projectId)){
-            return ResponseData.FAIL(fileName+",数据导入失败");
+        if(!SaveFileToDatabase(file, projectId,eid)){
+            String errorContext = errorViewService.getErrorContext(eid);
+            return ResponseData.FAIL(fileName+"\n"+errorContext);
         }
 
-        DataFile df = UploadUtil.Upload(file, basePath, bid);
+        DataFile df = UploadUtil.Upload(file, basePath, bid,eid);
         if (df != null) {
             fileService.save(df);
         } else {
-            return ResponseData.FAIL(fileName+",文件上传失败");
+            String errorContext = errorViewService.getErrorContext(eid);
+            return ResponseData.FAIL(fileName+"，"+errorContext);
+            // return ResponseData.FAIL(fileName+",文件上传失败");
         }
 
         return ResponseData.OK(null);
@@ -86,7 +117,8 @@ public class DataBankController {
             return ResponseData.FAIL("数据类型不存在");
         }
 
-        DataFile df = UploadUtil.Upload(file, basePath, bid);
+        Integer eid = (int) (System.currentTimeMillis() / 1000);
+        DataFile df = UploadUtil.Upload(file, basePath, bid,eid);
         if (df != null) {
             fileService.save(df);
             try {
@@ -204,12 +236,13 @@ public class DataBankController {
         }
     }
 
-    private boolean SaveFileToDatabase(MultipartFile file, Integer projectId) {
+    private boolean SaveFileToDatabase(MultipartFile file, Integer projectId,Integer eid) {
         try {
             EasyExcel.read(file.getInputStream(), DataBank.class, new DataBankListener(bankService, projectId)).sheet().doRead();
         }catch (Exception ex){
-            System.out.println("导入失败！");
-            ex.printStackTrace();
+            /*System.out.println("导入失败！");
+            ex.printStackTrace();*/
+            errorViewService.saveError(0, eid, ex.getMessage(),file.getOriginalFilename());
             return false;
         }
         return true;

@@ -52,7 +52,8 @@ public class DataBaseController<T> {
             return ResponseData.FAIL("数据导入失败");
         }
 
-        DataFile df = UploadUtil.Upload(file, basePath, bid);
+        Integer eid = (int) (System.currentTimeMillis() / 1000);
+        DataFile df = UploadUtil.Upload(file, basePath, bid,eid);
         if (df != null) {
             fileService.save(df);
         } else {
@@ -70,7 +71,8 @@ public class DataBaseController<T> {
         if (dtype == null) {
             return ResponseData.FAIL("数据类型不存在");
         }
-        DataFile df = UploadUtil.Upload(file, basePath, bid);
+        Integer eid = (int) (System.currentTimeMillis() / 1000);
+        DataFile df = UploadUtil.Upload(file, basePath, bid,eid);
         if (df != null) {
             fileService.save(df);
         } else {

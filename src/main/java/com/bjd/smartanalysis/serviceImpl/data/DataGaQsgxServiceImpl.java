@@ -8,6 +8,8 @@ import com.bjd.smartanalysis.service.data.DataGaQsgxService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DataGaQsgxServiceImpl extends ServiceImpl<DataGaQsgxMapper, DataGaQsgx> implements DataGaQsgxService {
     @Autowired
@@ -27,5 +29,17 @@ public class DataGaQsgxServiceImpl extends ServiceImpl<DataGaQsgxMapper, DataGaQ
         }
         // return false;
         return mapper.selectCount(queryWrapper) > 0;
+    }
+
+    @Override
+    public List<DataGaQsgx> GetAllPersonList(Integer projectId, String xm) {
+        QueryWrapper<DataGaQsgx> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        if (xm != null && !xm.equals("")) {
+            queryWrapper.like("XM", xm);
+        }
+        return mapper.selectList(queryWrapper);
     }
 }

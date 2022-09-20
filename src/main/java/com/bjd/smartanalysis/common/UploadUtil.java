@@ -5,15 +5,20 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bjd.smartanalysis.entity.DataFile;
 import com.bjd.smartanalysis.excellistener.DataGaListener;
+import com.bjd.smartanalysis.service.data.SysErrorViewService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
 public class UploadUtil {
-    public static DataFile Upload(MultipartFile file, String basePath, Integer bid) {
+    @Autowired
+    private static SysErrorViewService errorViewService;
+    public static DataFile Upload(MultipartFile file, String basePath, Integer bid,Integer eid) {
         String name = file.getOriginalFilename();
         Long size = file.getSize();
         String stuf = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
@@ -35,6 +40,8 @@ public class UploadUtil {
             df.setBelongId(bid);
             return df;
         }catch (Exception e) {
+            // 在sysErrorViewService中记录错误
+            errorViewService.saveError(0, eid, e.getMessage(),name);
             return null;
         }
     }
