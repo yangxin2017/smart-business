@@ -38,7 +38,7 @@ public class DataGaQsgxServiceImpl extends ServiceImpl<DataGaQsgxMapper, DataGaQ
             queryWrapper.eq("project_id", projectId);
         }
         if (xm != null && !xm.equals("")) {
-            queryWrapper.like("XM", xm);
+            queryWrapper.like("XM1", xm);
         }
         return mapper.selectList(queryWrapper);
     }
