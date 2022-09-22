@@ -3,6 +3,7 @@ package com.bjd.smartanalysis.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bjd.smartanalysis.common.ResponseData;
 import com.bjd.smartanalysis.entity.DataType;
 import com.bjd.smartanalysis.entity.data.*;
@@ -41,6 +42,19 @@ public class CalcController {
     @Autowired
     private DataProjectService projectService;
 
+    @Autowired
+    private DataGaZrzybqgFdcqService fdcqService;
+    @Autowired
+    private DataGaQydjxxZyryService zyryService;
+    @Autowired
+    private DataGaJrjgzhZhjbxxService zhjbxxService;
+    @Autowired
+    private DataGaZrzybqgDyqService dyqService;
+    @Autowired
+    private DataGaBxxxBxbdxxService bxxxBxbdxxService;
+    @Autowired
+    private DataGaZqxxCyxxService cyxxService;
+
     private Double perMinMoney = 5000.0;
 
     @GetMapping("relation")
@@ -76,6 +90,7 @@ public class CalcController {
 
         for(DataGaRydzda p: persons) {
             mbGroup++;
+            // 判断是否目标人
             if(p.getSfMbr() == null || !p.getSfMbr()) {
                 continue;
             }
@@ -120,6 +135,7 @@ public class CalcController {
                         nodeService.save(dnode);
                     }
 
+
                     Double jeJIN = 0.0;
                     List<Integer> jinIds = new ArrayList<>();
                     Double jeCHU = 0.0;
@@ -163,11 +179,9 @@ public class CalcController {
 
 
 
-
-
-
                     // 亲属关系逻辑
-                    // 如果qsgxList中包含XM1为snode.getNodeName()，XM2为dnode.getNodeName()的数据或者XM为dnode.getNodeName()，XM2为snode.getNodeName()的数据，则给这两个节点nodeGroup赋值为nodeGroup
+                    // 如果qsgxList中包含XM1为snode.getNodeName()，XM2为dnode.getNodeName()的数据或者XM为dnode.getNodeName()
+                    // XM2为snode.getNodeName()的数据，则给这两个节点nodeGroup赋值为nodeGroup
                     for (DataGaQsgx qsgx : qsgxList) {
                         if (qsgx.getXM1().equals(snode.getNodeName()) && qsgx.getXM2().equals(dnode.getNodeName())) {
                             nodeGroup++;
@@ -299,6 +313,67 @@ public class CalcController {
                 }
             }
         }
+
+
+        QueryWrapper <DataGaQsgx> qsgxQueryWrapper = new QueryWrapper<>();
+        for(DataGaRydzda p: persons) {
+            // 判断是否目标人
+            if(p.getSfMbr() == null || !p.getSfMbr()) {
+                continue;
+            }
+
+            // 取project_id为projectId的数据，并且gx为密切人，XM1为p.getXM()或XM2为p.getXM()的数据
+            qsgxQueryWrapper.clear();
+            qsgxQueryWrapper.eq("project_id", projectId);
+            qsgxQueryWrapper.eq("gx", "密切人");
+            qsgxQueryWrapper.and(wrapper -> wrapper.eq("XM1", p.getXM()).or().eq("XM2", p.getXM()));
+            List<DataGaQsgx> qsgxs = qsgxService.list(qsgxQueryWrapper);
+
+            // 循环qsgxs
+            for(DataGaQsgx qsgx: qsgxs) {
+                // graphNode中是否包含xm1和xm2
+                String xm1 = qsgx.getXM1();
+                String xm2 = qsgx.getXM2();
+                Integer xm1Id = GetNameId(xm1, persons);
+                Integer xm2Id = GetNameId(xm2, persons);
+                GraphNode xm1Node = nodeService.GetNodeByNodeIdAndType(projectId, xm1Id, "PERSON");
+                GraphNode xm2Node = nodeService.GetNodeByNodeIdAndType(projectId, xm2Id, "PERSON");
+                if(xm1Node == null) {
+                    xm1Node = new GraphNode();
+                    xm1Node.setNodeName(xm1);
+                    xm1Node.setNodeId(xm1Id);
+                    xm1Node.setNodeType("PERSON");
+                    xm1Node.setProjectId(projectId);
+                    xm1Node.setGroupId(mbGroup);
+                    nodeService.save(xm1Node);
+                }
+                if(xm2Node == null) {
+                    xm2Node = new GraphNode();
+                    xm2Node.setNodeName(xm2);
+                    xm2Node.setNodeId(xm2Id);
+                    xm2Node.setNodeType("PERSON");
+                    xm2Node.setProjectId(projectId);
+                    xm2Node.setGroupId(mbGroup);
+                    nodeService.save(xm2Node);
+                }
+
+                // 保存关系
+                GraphLine line = new GraphLine();
+                line.setSid(xm1Node.getId());
+                line.setEid(xm2Node.getId());
+                line.setName("0");
+                line.setRelationIds(qsgx.getId().toString());
+                line.setProjectId(projectId);
+                line.setGroupId(mbGroup);
+                lineService.save(line);
+
+            }
+
+
+        }
+        // 新增亲属关系
+
+
     }
 
     private Integer GetNameId(String name, List<DataGaRydzda> users) {
@@ -443,6 +518,74 @@ public class CalcController {
             } else {
                 obj.put("company", null);
             }
+
+
+            // 获取该人详细信息
+            QueryWrapper<DataGaZrzybqgFdcq> fdcqQueryWrapper = new QueryWrapper<>();
+            fdcqQueryWrapper.eq("project_id", projectId);
+            fdcqQueryWrapper.eq("mc", node.getNodeName());
+            obj.put("fdcq", fdcqService.list(fdcqQueryWrapper));
+
+
+            QueryWrapper <DataGaQydjxxZyry> qydjxxZyryQueryWrapper = new QueryWrapper<>();
+            qydjxxZyryQueryWrapper.eq("project_id", projectId);
+            qydjxxZyryQueryWrapper.eq("mc", node.getNodeName());
+            obj.put("gs",zyryService.list(qydjxxZyryQueryWrapper));
+
+            QueryWrapper <DataGaQsgx> qsgxQueryWrapper = new QueryWrapper<>();
+            qsgxQueryWrapper.eq("project_id", projectId);
+            qsgxQueryWrapper.ne("gx", "密切人").and(wrapper -> wrapper.eq("xm1", node.getNodeName()).or().eq("xm2", node.getNodeName()));
+            obj.put("qsgx", qsgxService.list(qsgxQueryWrapper));
+
+            QueryWrapper <DataGaQsgx> mqrQueryWrapper = new QueryWrapper<>();
+            mqrQueryWrapper.eq("project_id", projectId);
+            mqrQueryWrapper.eq("gx", "密切人").and(wrapper -> wrapper.eq("xm1", node.getNodeName()).or().eq("xm2", node.getNodeName()));
+            obj.put("mqr", qsgxService.list(mqrQueryWrapper));
+
+            QueryWrapper <DataGaJrjgzhZhjbxx> zhjbxxQueryWrapper = new QueryWrapper<>();
+            zhjbxxQueryWrapper.eq("project_id", projectId);
+            zhjbxxQueryWrapper.eq("mc", node.getNodeName());
+            obj.put("yhk", zhjbxxService.list(zhjbxxQueryWrapper));
+
+            QueryWrapper <DataGaZrzybqgDyq> dyqQueryWrapper = new QueryWrapper<>();
+            dyqQueryWrapper.eq("project_id", projectId);
+            dyqQueryWrapper.eq("mc", node.getNodeName());
+            obj.put("dyq", dyqService.list(dyqQueryWrapper));
+
+            QueryWrapper <DataGaBxxxBxbdxx> bxxxBxbdxxQueryWrapper = new QueryWrapper<>();
+            bxxxBxbdxxQueryWrapper.eq("project_id", projectId);
+            bxxxBxbdxxQueryWrapper.eq("zrrdxmc", node.getNodeName());
+            obj.put("bxbd", bxxxBxbdxxService.list(bxxxBxbdxxQueryWrapper));
+
+            QueryWrapper <DataGaZqxxCyxx> cyxxQueryWrapper = new QueryWrapper<>();
+            cyxxQueryWrapper.eq("project_id", projectId);
+            cyxxQueryWrapper.eq("xm", node.getNodeName());
+
+            List<DataGaZqxxCyxx> cyxxList = cyxxService.list(cyxxQueryWrapper);
+            List<DataGaZqxxCyxx> cyxxList2 = new ArrayList<>();
+            for(DataGaZqxxCyxx cyxx : cyxxList){
+                if(cyxxList2.size() == 0){
+                    cyxxList2.add(cyxx);
+                }else{
+                    boolean isExist = false;
+                    for(DataGaZqxxCyxx cyxx2 : cyxxList2){
+                        if(cyxx.getZQDM()!=null&&cyxx2.getZQDM()!=null&&cyxx.getZQDM().equals(cyxx2.getZQDM())){
+                            isExist = true;
+                            if(cyxx.getCYRQ().compareTo(cyxx2.getCYRQ()) > 0){
+                                cyxxList2.remove(cyxx2);
+                                cyxxList2.add(cyxx);
+                            }
+                        }else{
+                            isExist = false;
+                        }
+                    }
+                    if(!isExist){
+                        cyxxList2.add(cyxx);
+                    }
+                }
+            }
+            obj.put("cyxx", cyxxList2);
+
             ns.add(obj);
         }
 
