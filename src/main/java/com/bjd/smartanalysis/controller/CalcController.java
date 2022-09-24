@@ -361,7 +361,7 @@ public class CalcController {
                 GraphLine line = new GraphLine();
                 line.setSid(xm1Node.getId());
                 line.setEid(xm2Node.getId());
-                line.setName("0");
+                line.setName("密切人");
                 line.setRelationIds(qsgx.getId().toString());
                 line.setProjectId(projectId);
                 line.setGroupId(mbGroup);

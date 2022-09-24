@@ -59,7 +59,7 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
     public Boolean isExist(Integer projectId, DataGaRydzda dataGaRydzda) {
         QueryWrapper<DataGaRydzda> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("project_id", projectId);
-        if (dataGaRydzda.getXM() == null) {
+        /*if (dataGaRydzda.getXM() == null) {
             queryWrapper.isNull("XM");
         } else {
             queryWrapper.eq("XM", dataGaRydzda.getXM());
@@ -201,6 +201,15 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
             queryWrapper.isNull("sf_mbr");
         } else {
             queryWrapper.eq("sf_mbr", dataGaRydzda.getSfMbr());
+        }*/
+
+
+        if(dataGaRydzda.getSFZH() == null){
+            /*queryWrapper.isNull("SFZH");*/
+            // 返回否
+            return false;
+        }else{
+            queryWrapper.eq("SFZH", dataGaRydzda.getSFZH());
         }
 
 

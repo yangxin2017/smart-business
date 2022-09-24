@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bjd.smartanalysis.entity.data.DataGaQsgx;
 import com.bjd.smartanalysis.entity.data.DataGaRydzda;
+import com.bjd.smartanalysis.entity.data.SysErrorView;
 import com.bjd.smartanalysis.service.data.DataBankService;
 import com.bjd.smartanalysis.service.data.DataGaQsgxService;
 import com.bjd.smartanalysis.service.data.DataGaRydzdaService;
+import com.bjd.smartanalysis.service.data.SysErrorViewService;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +25,15 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
     private IService service;
     private List<T> list = new ArrayList<>();
     private Integer projectId;
+    private Integer eid;
+    private SysErrorViewService errorViewService;
 
+    public DataGaListener(IService service, Integer projectId,Integer eid,SysErrorViewService errorViewService) {
+        this.service = service;
+        this.projectId = projectId;
+        this.eid = eid;
+        this.errorViewService = errorViewService;
+    }
     public DataGaListener(IService service, Integer projectId) {
         this.service = service;
         this.projectId = projectId;
@@ -81,6 +92,33 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        service.saveBatch(list);
+        ArrayList saveList = new ArrayList();
+        // 判断导入的数据中是否包含sfzh为空的数据
+        if(list.size() > 0){
+            if(list.get(0).getClass().getName().equals("com.bjd.smartanalysis.entity.data.DataGaRydzda")){
+                for (int i = 0; i < list.size(); i++) {
+                    DataGaRydzda rydzda = (DataGaRydzda) list.get(i);
+                    if(rydzda.getSFZH() == null || rydzda.getSFZH().equals("")){
+                        // 在数据库中保存错误信息
+                        Integer a = this.projectId;
+                        Integer b = this.eid;
+                        errorViewService.saveError(0, eid,"身份证号为空",rydzda.getXM());
+                    }else{
+                        Boolean isnotin = true;
+                        // 查询saveList中是否包含sfzh为list.get(i)的sfzh的数据，如果有则跳过
+                        for (int j = 0; j < saveList.size(); j++) {
+                            DataGaRydzda rydzda1 = (DataGaRydzda) saveList.get(j);
+                            if(rydzda1.getSFZH().equals(rydzda.getSFZH())){
+                                isnotin = false;
+                            }
+                        }
+                        if(isnotin){
+                            saveList.add(list.get(i));
+                        }
+                    }
+                }
+            }
+        }
+        service.saveBatch(saveList);
     }
 }

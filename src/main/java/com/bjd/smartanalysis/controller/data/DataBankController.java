@@ -93,7 +93,7 @@ public class DataBankController {
             return ResponseData.FAIL(fileName+"\n"+errorContext);
         }
 
-        DataFile df = UploadUtil.Upload(file, basePath, bid,eid);
+        DataFile df = UploadUtil.Upload(file, basePath, bid,eid,errorViewService);
         if (df != null) {
             fileService.save(df);
         } else {
@@ -118,7 +118,7 @@ public class DataBankController {
         }
 
         Integer eid = (int) (System.currentTimeMillis() / 1000);
-        DataFile df = UploadUtil.Upload(file, basePath, bid,eid);
+        DataFile df = UploadUtil.Upload(file, basePath, bid,eid,errorViewService);
         if (df != null) {
             fileService.save(df);
             try {
@@ -172,7 +172,8 @@ public class DataBankController {
 
     @GetMapping("list")
     @ApiOperation(value = "获取数据列表", notes = "获取数据列表")
-    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId, String mc,String zjhm,String cxkh,String jyje,String jydfmc,String jydfkh,String jydfzjhm) {
+    //private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId, String mc,String zjhm,String cxkh,String jyje,String jydfmc,String jydfkh,String jydfzjhm) {
+    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId,String bfzh,String jydfzh, String mc,String jydfmc,String jyje,String jylx,String jysj,String fkdw) {
         IPage<DataBank> page = new Page<>(pageIndex, pageSize);
         QueryWrapper<DataBank> queryWrapper = new QueryWrapper<>();
 
@@ -180,11 +181,11 @@ public class DataBankController {
         if(mc != null && !mc.isEmpty()) {
             queryWrapper.like("MC", mc);
         }
-        if(zjhm != null && !zjhm.isEmpty()) {
-            queryWrapper.like("ZJHM", zjhm);
+        if(bfzh != null && !bfzh.isEmpty()) {
+            queryWrapper.like("BFZH", bfzh);
         }
-        if(cxkh != null && !cxkh.isEmpty()) {
-            queryWrapper.like("CXKH", cxkh);
+        if(jydfzh != null && !jydfzh.isEmpty()) {
+            queryWrapper.like("JYDFZH", jydfzh);
         }
         if(jyje != null && !jyje.isEmpty()) {
             String[] jyjeArr = jyje.split("-");
@@ -197,11 +198,14 @@ public class DataBankController {
         if(jydfmc != null && !jydfmc.isEmpty()) {
             queryWrapper.like("JYDFMC", jydfmc);
         }
-        if(jydfkh != null && !jydfkh.isEmpty()) {
-            queryWrapper.like("JYDFKH", jydfkh);
+        if(jylx != null && !jylx.isEmpty()) {
+            queryWrapper.like("JYLX", jylx);
         }
-        if(jydfzjhm != null && !jydfzjhm.isEmpty()) {
-            queryWrapper.like("JYDFZJHM", jydfzjhm);
+        if(jysj != null && !jysj.isEmpty()) {
+            queryWrapper.like("JYSJ", jysj);
+        }
+        if(fkdw != null && !fkdw.isEmpty()) {
+            queryWrapper.like("FKDW", fkdw);
         }
 
         page = bankService.page(page, queryWrapper);

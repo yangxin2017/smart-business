@@ -16,9 +16,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class UploadUtil {
-    @Autowired
-    private static SysErrorViewService errorViewService;
-    public static DataFile Upload(MultipartFile file, String basePath, Integer bid,Integer eid) {
+    public static DataFile Upload(MultipartFile file, String basePath, Integer bid,Integer eid,SysErrorViewService errorViewService) {
         String name = file.getOriginalFilename();
         Long size = file.getSize();
         String stuf = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
@@ -55,6 +53,17 @@ public class UploadUtil {
         String daystr = day < 10 ? "0" + day : day.toString();
 
         return year + "/" + monthstr + "/" + daystr;
+    }
+
+    public static boolean SaveFileToDatabase(MultipartFile file, Class cls, IService service, Integer projectId,Integer eid,SysErrorViewService errorViewService) {
+        try {
+            EasyExcel.read(file.getInputStream(), cls, new DataGaListener(service, projectId,eid,errorViewService)).sheet().doRead();
+        }catch (Exception ex){
+            System.out.println("导入失败！");
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     public static boolean SaveFileToDatabase(MultipartFile file, Class cls, IService service, Integer projectId) {

@@ -10,6 +10,7 @@ import com.bjd.smartanalysis.entity.data.DataGaRydzda;
 import com.bjd.smartanalysis.service.DataFileService;
 import com.bjd.smartanalysis.service.DataTypeService;
 import com.bjd.smartanalysis.service.data.DataGaRydzdaService;
+import com.bjd.smartanalysis.service.data.SysErrorViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -36,6 +37,8 @@ public class DataGaRydzdaController {
     private DataFileService fileService;
     @Autowired
     private DataGaRydzdaService service;
+    @Autowired
+    private SysErrorViewService errorViewService;
 
     private DataBaseController<DataGaRydzda> controller;
 
@@ -43,7 +46,7 @@ public class DataGaRydzdaController {
     @ApiOperation(value = "上传数据", notes = "上传数据")
     @ApiImplicitParams({@ApiImplicitParam(name = "file", value = "文件流对象", required = true, dataType = "__File")})
     private ResponseData UploadData(@RequestParam("file") MultipartFile file, Integer bid, Integer projectId) {
-        controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
+        controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId,errorViewService);
         return controller.UploadData(file, bid, DataGaRydzda.class);
     }
 
