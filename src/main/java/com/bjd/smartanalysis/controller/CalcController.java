@@ -86,14 +86,22 @@ public class CalcController {
 
         // 获取亲属关系表中project_id为projectId的所有数据
         List<DataGaQsgx> qsgxList = qsgxService.GetAllPersonList(projectId, "");
+        QueryWrapper <DataGaQsgx> queryWrapper = new QueryWrapper <>();
 
 
         for(DataGaRydzda p: persons) {
             mbGroup++;
-            // 判断是否目标人
-            if(p.getSfMbr() == null || !p.getSfMbr()) {
-                continue;
+            queryWrapper.clear();
+            // 查询亲属关系中projectId为projectId,XM1为p.getXM()或XM2为p.getXM()的数据，并且gx为密切人
+            queryWrapper.eq("project_id", projectId).and(wrapper -> wrapper.eq("xm1", p.getXM()).or().eq("xm2", p.getXM())).eq("gx", "密切人");
+            List<DataGaQsgx> qsgxList1 = qsgxService.list(queryWrapper);
+            if(qsgxList1.size()==0){
+                // 判断是否目标人
+                if(p.getSfMbr() == null || !p.getSfMbr()) {
+                    continue;
+                }
             }
+
 
             String mbrName = p.getXM();
             String nullName = "空";
@@ -317,9 +325,15 @@ public class CalcController {
 
         QueryWrapper <DataGaQsgx> qsgxQueryWrapper = new QueryWrapper<>();
         for(DataGaRydzda p: persons) {
-            // 判断是否目标人
-            if(p.getSfMbr() == null || !p.getSfMbr()) {
-                continue;
+            queryWrapper.clear();
+            // 查询亲属关系中projectId为projectId,XM1为p.getXM()或XM2为p.getXM()的数据，并且gx为密切人
+            queryWrapper.eq("project_id", projectId).and(wrapper -> wrapper.eq("xm1", p.getXM()).or().eq("xm2", p.getXM())).eq("gx", "密切人");
+            List<DataGaQsgx> qsgxList1 = qsgxService.list(queryWrapper);
+            if(qsgxList1.size()==0){
+                // 判断是否目标人
+                if(p.getSfMbr() == null || !p.getSfMbr()) {
+                    continue;
+                }
             }
 
             // 取project_id为projectId的数据，并且gx为密切人，XM1为p.getXM()或XM2为p.getXM()的数据
@@ -497,6 +511,8 @@ public class CalcController {
         List<GraphNode> nodes = nodeService.GetNodeList(projectId);
         List<GraphLine> lines = lineService.GetLineList(projectId);
 
+        QueryWrapper <DataGaQsgx> queryWrapper = new QueryWrapper<>();
+
         JSONArray ns = new JSONArray();
         for(GraphNode node: nodes) {
             JSONObject obj = new JSONObject();
@@ -508,6 +524,12 @@ public class CalcController {
             obj.put("nodeGroup", node.getNodeGroup());
             DataGaRydzda user = rydzdaService.getById(node.getNodeId());
             if (user != null) {
+                queryWrapper.clear();
+                queryWrapper.eq("project_id", projectId).and(wrapper -> wrapper.eq("xm1", user.getXM()).or().eq("xm2", user.getXM())).eq("gx", "密切人");
+                List <DataGaQsgx> qsgxList = qsgxService.list(queryWrapper);
+                if(qsgxList.size()>0){
+                    user.setSfMbr(true);
+                }
                 obj.put("user", user);
             } else {
                 obj.put("user", null);
