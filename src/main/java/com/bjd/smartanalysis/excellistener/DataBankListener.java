@@ -13,6 +13,7 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
     private DataBankService bankService;
     private Integer projectId;
     private List<DataBank> bankList = new ArrayList<>();
+    private Integer batch_count = 100;
 
     public DataBankListener() {
     }
@@ -71,16 +72,24 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
         }
 
         // 数据库中是否包含与dataBank相同的数据
-        boolean isExist = bankService.isExist(projectId,dataBank);
-        if(!isExist){
-            bankList.add(dataBank);
-        }
+//        boolean isExist = bankService.isExist(projectId,dataBank);
+//        if(!isExist){
+//            bankList.add(dataBank);
+//        }
 
-        /*bankList.add(dataBank);*/
+        bankList.add(dataBank);
+        if (bankList.size() >= this.batch_count) {
+            SaveData();
+            bankList.clear();
+        }
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        SaveData();
+    }
+
+    public void SaveData() {
         bankService.saveBatch(bankList);
     }
 }

@@ -58,29 +58,30 @@ public class DataBankController {
         Integer eid = (int) (System.currentTimeMillis() / 1000);
         // 获取文件名
         String fileName = file.getOriginalFilename();
-        try{
-            // 获取表头列表
-            InputStream inputStream = file.getInputStream();
-            ExcelReader reader = ExcelUtil.getReader(inputStream);
-            List<List<Object>> read = reader.read();
-            List<Object> head = read.get(0);
-            List<String> titles = new ArrayList<>();
-            titles.add("名称");
-            titles.add("查询对象名称");
-            titles.add("本方账号");
-            titles.add("本方卡号");
-            titles.add("交易余额");
-            titles.add("交易金额");
-            List<String> readTitles = new ArrayList<>();
-            for (Object o : head) {
-                readTitles.add(o.toString());
-            }
-            if (!readTitles.containsAll(titles)){
-                return ResponseData.FAIL(fileName+"，上传文件模板错误");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        try{
+//            // 获取表头列表
+//            InputStream inputStream = file.getInputStream();
+//            ExcelReader reader = ExcelUtil.getReader(inputStream);
+//            List<List<Object>> read = reader.read();
+//            List<Object> head = read.get(0);
+//            List<String> titles = new ArrayList<>();
+//            titles.add("名称");
+//            titles.add("查询对象名称");
+//            titles.add("本方账号");
+//            titles.add("本方卡号");
+//            titles.add("交易余额");
+//            titles.add("交易金额");
+//            List<String> readTitles = new ArrayList<>();
+//            for (Object o : head) {
+//                readTitles.add(o.toString());
+//            }
+//            if (!readTitles.containsAll(titles)){
+//                return ResponseData.FAIL(fileName+"，上传文件模板错误");
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+
         if (file.isEmpty() || bid == null) {
             return ResponseData.FAIL("没有选择文件");
         }
@@ -88,14 +89,17 @@ public class DataBankController {
         if (dtype == null) {
             return ResponseData.FAIL(fileName+",数据类型不存在");
         }
-        if(!SaveFileToDatabase(file, projectId,eid)){
-            String errorContext = errorViewService.getErrorContext(eid);
-            return ResponseData.FAIL(fileName+"\n"+errorContext);
-        }
 
         DataFile df = UploadUtil.Upload(file, basePath, bid,eid,errorViewService);
         if (df != null) {
             fileService.save(df);
+            System.out.println("file saved");
+            //////////////
+
+            if(!SaveFileToDatabase(df, projectId,eid)){
+                String errorContext = errorViewService.getErrorContext(eid);
+                return ResponseData.FAIL(fileName+"\n"+errorContext);
+            }
         } else {
             String errorContext = errorViewService.getErrorContext(eid);
             return ResponseData.FAIL(fileName+"，"+errorContext);
@@ -240,13 +244,15 @@ public class DataBankController {
         }
     }
 
-    private boolean SaveFileToDatabase(MultipartFile file, Integer projectId,Integer eid) {
+    private boolean SaveFileToDatabase(DataFile file, Integer projectId,Integer eid) {
         try {
-            EasyExcel.read(file.getInputStream(), DataBank.class, new DataBankListener(bankService, projectId)).sheet().doRead();
+            String filepath = basePath + file.getFilepath();
+            System.out.println("read file====" + filepath);
+            EasyExcel.read(filepath, DataBank.class, new DataBankListener(bankService, projectId)).sheet().doRead();
         }catch (Exception ex){
             /*System.out.println("导入失败！");
             ex.printStackTrace();*/
-            errorViewService.saveError(0, eid, ex.getMessage(),file.getOriginalFilename());
+            errorViewService.saveError(0, eid, ex.getMessage(),file.getFilename());
             return false;
         }
         return true;
