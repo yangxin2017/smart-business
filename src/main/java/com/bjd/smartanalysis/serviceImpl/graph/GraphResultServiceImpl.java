@@ -20,4 +20,11 @@ public class GraphResultServiceImpl extends ServiceImpl<GraphResultMapper, Graph
         queryWrapper.last("limit 1");
         return mapper.selectOne(queryWrapper);
     }
+
+    @Override
+    public void RemoveByProjectId(Integer projectId) {
+        QueryWrapper<GraphResult> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", projectId);
+        mapper.delete(queryWrapper);
+    }
 }

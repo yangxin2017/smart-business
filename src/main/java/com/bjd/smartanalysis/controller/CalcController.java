@@ -9,9 +9,11 @@ import com.bjd.smartanalysis.entity.DataType;
 import com.bjd.smartanalysis.entity.data.*;
 import com.bjd.smartanalysis.entity.graph.GraphLine;
 import com.bjd.smartanalysis.entity.graph.GraphNode;
+import com.bjd.smartanalysis.entity.graph.GraphResult;
 import com.bjd.smartanalysis.service.data.*;
 import com.bjd.smartanalysis.service.graph.GraphLineService;
 import com.bjd.smartanalysis.service.graph.GraphNodeService;
+import com.bjd.smartanalysis.service.graph.GraphResultService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public class CalcController {
     private GraphLineService lineService;
     @Autowired
     private GraphNodeService nodeService;
+    @Autowired
+    private GraphResultService resultService;
 
     @Autowired
     private DataProjectService projectService;
@@ -55,7 +59,7 @@ public class CalcController {
     @Autowired
     private DataGaZqxxCyxxService cyxxService;
 
-    private Double perMinMoney = 5000.0;
+    private Double perMinMoney = 1000.0;
 
     @GetMapping("relation")
     @ApiOperation(value = "计算关系图", notes = "计算关系图")
@@ -66,6 +70,7 @@ public class CalcController {
         ///////
         nodeService.RemoveByProjectId(projectId);
         lineService.RemoveByProjectId(projectId);
+        resultService.RemoveByProjectId(projectId);
         ///////
         CalcAndSaveNodeLine(persons, banks, companys, projectId);
         ///////
@@ -86,20 +91,31 @@ public class CalcController {
 
         // 获取亲属关系表中project_id为projectId的所有数据
         List<DataGaQsgx> qsgxList = qsgxService.GetAllPersonList(projectId, "");
+        List<DataGaQsgx> allQsgxList = qsgxService.GetAllPersonList(projectId, "");
         QueryWrapper <DataGaQsgx> queryWrapper = new QueryWrapper <>();
 
+        List<DataGaRydzda> allMBR = new ArrayList<>();
+        for (DataGaRydzda p: persons) {
+            if(p.getSfMbr() != null && p.getSfMbr()) {
+                allMBR.add(p);
+            }
+        }
 
         for(DataGaRydzda p: persons) {
+            boolean ismrq = IsMQR(allMBR, allQsgxList, p);
+            // 判断是否目标人
+            if(p.getSfMbr() == null || !p.getSfMbr()) {
+                if(!ismrq) {
+                    continue;
+                }
+            }
+
             mbGroup++;
             queryWrapper.clear();
             // 查询亲属关系中projectId为projectId,XM1为p.getXM()或XM2为p.getXM()的数据，并且gx为密切人
             queryWrapper.eq("project_id", projectId).and(wrapper -> wrapper.eq("xm1", p.getXM()).or().eq("xm2", p.getXM())).eq("gx", "密切人");
             List<DataGaQsgx> qsgxList1 = qsgxService.list(queryWrapper);
             if(qsgxList1.size()==0){
-                // 判断是否目标人
-                if(p.getSfMbr() == null || !p.getSfMbr()) {
-                    continue;
-                }
             }
 
 
@@ -323,18 +339,22 @@ public class CalcController {
         }
 
 
+
         QueryWrapper <DataGaQsgx> qsgxQueryWrapper = new QueryWrapper<>();
         for(DataGaRydzda p: persons) {
+            if(p.getSfMbr() == null || !p.getSfMbr()) {
+                continue;
+            }
             queryWrapper.clear();
             // 查询亲属关系中projectId为projectId,XM1为p.getXM()或XM2为p.getXM()的数据，并且gx为密切人
             queryWrapper.eq("project_id", projectId).and(wrapper -> wrapper.eq("xm1", p.getXM()).or().eq("xm2", p.getXM())).eq("gx", "密切人");
             List<DataGaQsgx> qsgxList1 = qsgxService.list(queryWrapper);
-            if(qsgxList1.size()==0){
-                // 判断是否目标人
-                if(p.getSfMbr() == null || !p.getSfMbr()) {
-                    continue;
-                }
-            }
+//            if(qsgxList1.size()==0){
+//                // 判断是否目标人
+//                if(p.getSfMbr() == null || !p.getSfMbr()) {
+//                    continue;
+//                }
+//            }
 
             // 取project_id为projectId的数据，并且gx为密切人，XM1为p.getXM()或XM2为p.getXM()的数据
             qsgxQueryWrapper.clear();
@@ -388,6 +408,42 @@ public class CalcController {
         // 新增亲属关系
 
 
+    }
+
+    private boolean IsMQR(List<DataGaRydzda> mbrs, List<DataGaQsgx> qsgxList, DataGaRydzda checkPerson){
+        boolean isMbr = false;
+        for(DataGaRydzda p: mbrs) {
+            if (p.getId().equals(checkPerson.getId())) {
+                isMbr = true;
+            }
+        }
+        if (isMbr) {
+            return false;
+        }
+
+        boolean isExist = false;
+        for(DataGaQsgx q: qsgxList) {
+            if (q.getXM1().equals(checkPerson.getXM()) || q.getXM2().equals(checkPerson.getXM())){
+                isExist = true;
+            }
+        }
+        if (!isExist) {
+            return false;
+        }
+
+        boolean isMrq = false;
+        for(DataGaQsgx q: qsgxList) {
+            String xm1 = q.getXM1();
+            String xm2 = q.getXM2();
+            for (DataGaRydzda p : mbrs) {
+                String mbName = p.getXM();
+                String mb2Name = checkPerson.getXM();
+                if((xm1.equals(mbName) && xm2.equals(mb2Name)) || xm2.equals(mbName) && xm1.equals(mb2Name)) {
+                    isMrq = true;
+                }
+            }
+        }
+        return isMrq;
     }
 
     private Integer GetNameId(String name, List<DataGaRydzda> users) {
