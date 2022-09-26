@@ -258,4 +258,14 @@ public class DataBankController {
         return true;
     }
 
+    @GetMapping("remove")
+    @ApiOperation(value = "删除所有数据", notes = "删除所有数据")
+    private ResponseData RemoveAllData(Integer projectId) {
+        QueryWrapper<DataBank> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", projectId);
+        // 清空数据库中project_id为projectId的数据
+        bankService.remove(queryWrapper);
+        return ResponseData.OK("OK");
+    }
+
 }

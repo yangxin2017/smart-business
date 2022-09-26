@@ -1,5 +1,6 @@
 package com.bjd.smartanalysis.controller.data;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bjd.smartanalysis.common.ResponseData;
 import com.bjd.smartanalysis.entity.data.DataGaRydzdaGs;
 import com.bjd.smartanalysis.service.data.DataGaRydzdaGsService;
@@ -43,5 +44,15 @@ public class DataGaRydzdaGsController {
     public ResponseData GetDataList(Integer userId){
         List<DataGaRydzdaGs> data = gsService.GetListByUserId(userId);
         return ResponseData.OK(data);
+    }
+
+    @GetMapping("remove")
+    @ApiOperation(value = "删除所有数据", notes = "删除所有数据")
+    private ResponseData RemoveAllData(Integer projectId) {
+        QueryWrapper<DataGaRydzdaGs> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", projectId);
+        // 清空数据库中project_id为projectId的数据
+        gsService.remove(queryWrapper);
+        return ResponseData.OK("OK");
     }
 }

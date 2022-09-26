@@ -1,5 +1,6 @@
 package com.bjd.smartanalysis.controller.data;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bjd.smartanalysis.common.ResponseData;
 import com.bjd.smartanalysis.entity.data.DataGaRmyhzh;
 import com.bjd.smartanalysis.service.DataFileService;
@@ -67,5 +68,15 @@ public class DataGaRmyhzhController {
     public void ExportExcel(HttpServletResponse response, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
         controller.ExportExcel("中国人民银行银行账户", DataGaRmyhzh.class, response);
+    }
+
+    @GetMapping("remove")
+    @ApiOperation(value = "删除所有数据", notes = "删除所有数据")
+    private ResponseData RemoveAllData(Integer projectId) {
+        QueryWrapper<DataGaRmyhzh> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", projectId);
+        // 清空数据库中project_id为projectId的数据
+        service.remove(queryWrapper);
+        return ResponseData.OK("OK");
     }
 }

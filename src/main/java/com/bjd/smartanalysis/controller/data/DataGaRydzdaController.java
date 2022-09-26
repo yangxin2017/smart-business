@@ -1,5 +1,6 @@
 package com.bjd.smartanalysis.controller.data;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjd.smartanalysis.common.ResponseData;
@@ -102,5 +103,15 @@ public class DataGaRydzdaController {
             service.updateById(user);
         }
         return ResponseData.OK(user);
+    }
+
+    @GetMapping("remove")
+    @ApiOperation(value = "删除所有数据", notes = "删除所有数据")
+    private ResponseData RemoveAllData(Integer projectId) {
+        QueryWrapper<DataGaRydzda> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", projectId);
+        // 清空数据库中project_id为projectId的数据
+        service.remove(queryWrapper);
+        return ResponseData.OK("OK");
     }
 }

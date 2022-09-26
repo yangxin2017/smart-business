@@ -117,6 +117,10 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
                         }
                     }
                 }
+            }else{
+                for (int i = 0; i < list.size(); i++) {
+                    saveList.add(list.get(i));
+                }
             }
         }
         service.saveBatch(saveList);

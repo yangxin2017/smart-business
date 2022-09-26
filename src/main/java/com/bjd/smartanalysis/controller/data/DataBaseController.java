@@ -70,14 +70,16 @@ public class DataBaseController<T> {
         // 获取SysErrorView中eid为eid的数据
         QueryWrapper <SysErrorView> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("eid",eid);
-        List<SysErrorView> errorViews = errorViewService.list(queryWrapper);
-        if(errorViews.size() > 0){
-            String errorContext = "";
-            for (SysErrorView errorView : errorViews) {
-                errorContext += errorView.getFileName()+""+errorView.getErrorContext() + "，";
+        if(errorViewService!=null){
+            List<SysErrorView> errorViews = errorViewService.list(queryWrapper);
+            if(errorViews.size() > 0){
+                String errorContext = "";
+                for (SysErrorView errorView : errorViews) {
+                    errorContext += errorView.getFileName()+""+errorView.getErrorContext() + "，";
+                }
+                errorContext = errorContext.substring(0,errorContext.length()-1);
+                return ResponseData.FAIL(errorContext);
             }
-            errorContext = errorContext.substring(0,errorContext.length()-1);
-            return ResponseData.FAIL(errorContext);
         }
 
         DataFile df = UploadUtil.Upload(file, basePath, bid,eid,errorViewService);

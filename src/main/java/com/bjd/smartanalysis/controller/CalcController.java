@@ -206,7 +206,11 @@ public class CalcController {
                     // 亲属关系逻辑
                     // 如果qsgxList中包含XM1为snode.getNodeName()，XM2为dnode.getNodeName()的数据或者XM为dnode.getNodeName()
                     // XM2为snode.getNodeName()的数据，则给这两个节点nodeGroup赋值为nodeGroup
-                    for (DataGaQsgx qsgx : qsgxList) {
+                    QueryWrapper <DataGaQsgx> queryWrapper1 = new QueryWrapper <>();
+                    queryWrapper1.eq("project_id", projectId);
+                    //.and(wrapper -> wrapper.ne("gx","密切人"));
+                    List <DataGaQsgx> qsgxListd = qsgxService.list(queryWrapper1);
+                    for (DataGaQsgx qsgx : qsgxListd) {
                         if (qsgx.getXM1().equals(snode.getNodeName()) && qsgx.getXM2().equals(dnode.getNodeName())) {
                             nodeGroup++;
                             String nodeNumber = String.valueOf(nodeGroup);
@@ -228,6 +232,7 @@ public class CalcController {
                             nodeService.updateById(snode);
                             nodeService.updateById(dnode);
                         }
+
                     }
                 }
             }
