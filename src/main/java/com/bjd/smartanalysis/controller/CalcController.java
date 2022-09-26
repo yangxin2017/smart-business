@@ -16,6 +16,7 @@ import com.bjd.smartanalysis.service.graph.GraphNodeService;
 import com.bjd.smartanalysis.service.graph.GraphResultService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -164,17 +165,32 @@ public class CalcController {
                     List<Integer> jinIds = new ArrayList<>();
                     Double jeCHU = 0.0;
                     List<Integer> chuIds = new ArrayList<>();
+
+                    List <DataBank> saveBankList = new ArrayList<>();
                     for (DataBank db : zd.get(k)) {
-                        Double tv = Double.parseDouble(db.getJYJE());
-                        if (tv > 0) {
-                            if (tv > perMinMoney) {
-                                jeJIN += tv;
-                                jinIds.add(db.getId());
+                        boolean isIn = false;
+                        for(DataBank sdb:saveBankList){
+                            /*if(db.getJYSJ()==sdb.getJYSJ()&&db.getCXDXMC()==sdb.getCXDXMC()&&db.getJYYE().equals((sdb.getJYYE()))){*/
+                            if(StringUtils.equals(db.getJYSJ(),sdb.getJYSJ())
+                                    && StringUtils.equals(db.getCXDXMC(),sdb.getCXDXMC())
+                                    && StringUtils.equals(db.getJYYE(),sdb.getJYYE())
+                                    && StringUtils.equals(db.getJYJE(),sdb.getJYJE())){
+                                isIn = true;
                             }
-                        } else {
-                            if (tv < -perMinMoney) {
-                                jeCHU += tv;
-                                chuIds.add(db.getId());
+                        }
+                        if(!isIn){
+                            saveBankList.add(db);
+                            Double tv = Double.parseDouble(db.getJYJE());
+                            if (tv > 0) {
+                                if (tv > perMinMoney) {
+                                    jeJIN += tv;
+                                    jinIds.add(db.getId());
+                                }
+                            } else {
+                                if (tv < -perMinMoney) {
+                                    jeCHU += tv;
+                                    chuIds.add(db.getId());
+                                }
                             }
                         }
                     }
@@ -304,6 +320,34 @@ public class CalcController {
                     List<Integer> jinIds = new ArrayList<>();
                     Double jeCHU = 0.0;
                     List<Integer> chuIds = new ArrayList<>();
+
+                    List <DataBank> saveBankList = new ArrayList<>();
+                    for (DataBank db : zd.get(k)) {
+                        boolean isIn = false;
+                        for(DataBank sdb:saveBankList){
+                            if(StringUtils.equals(db.getJYSJ(),sdb.getJYSJ())
+                                    && StringUtils.equals(db.getCXDXMC(),sdb.getCXDXMC())
+                                    && StringUtils.equals(db.getJYYE(),sdb.getJYYE())
+                                    && StringUtils.equals(db.getJYJE(),sdb.getJYJE())){
+                                isIn = true;
+                            }
+                        }
+                        if(!isIn){
+                            saveBankList.add(db);
+                            Double tv = Double.parseDouble(db.getJYJE());
+                            if (tv > 0) {
+                                if (tv > perMinMoney) {
+                                    jeJIN += tv;
+                                    jinIds.add(db.getId());
+                                }
+                            } else {
+                                if (tv < -perMinMoney) {
+                                    jeCHU += tv;
+                                    chuIds.add(db.getId());
+                                }
+                            }
+                        }
+                    }
                     for (DataBank db : zd.get(k)) {
                         Double tv = Double.parseDouble(db.getJYJE());
                         if (tv > 0) {
@@ -696,7 +740,31 @@ public class CalcController {
                 idArr.add(i);
             }
             List<DataBank> datas = bankService.listByIds(idArr);
-            obj.put("relation", datas);
+            List<DataBank> datas2 = new ArrayList<>();
+            for(DataBank data : datas){
+                if(datas2.size() == 0){
+                    datas2.add(data);
+                }else{
+                    boolean isExist = false;
+                    for(DataBank data2 : datas2){
+                        /*&&
+                        data.getJYDFZH()!=data2.getJYDFZH()
+                        &&
+                        data.getBFKH()!=data2.getBFKH()*/
+                        if(StringUtils.equals(data.getJYSJ(),data2.getJYSJ())
+                                && StringUtils.equals(data.getCXDXMC(),data2.getCXDXMC())
+                                && StringUtils.equals(data.getJYJE(),data2.getJYJE())
+                                && StringUtils.equals(data.getJYYE(),data2.getJYYE())){
+                            isExist = true;
+                        }
+                    }
+                    if(!isExist){
+                        datas2.add(data);
+                    }
+                }
+            }
+
+            obj.put("relation", datas2);
             arr.add(obj);
         }
 
