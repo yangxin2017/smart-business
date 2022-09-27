@@ -68,6 +68,11 @@ public class CalcController {
         List<DataGaRydzda> persons = rydzdaService.GetAllPersonList(projectId, "");
         List<DataGaJgfrxx> companys = jgfrxxService.GetAllCompany(projectId);
         List<DataBank> banks = bankService.GetAllBanks(projectId);
+        for(DataBank db: banks) {
+            if(db.getJYJE() == null || db.getJYJE().equals("")) {
+                db.setJYYE("0");
+            }
+        }
         ///////
         nodeService.RemoveByProjectId(projectId);
         lineService.RemoveByProjectId(projectId);
@@ -180,7 +185,10 @@ public class CalcController {
                         }
                         if(!isIn){
                             saveBankList.add(db);
-                            Double tv = Double.parseDouble(db.getJYJE());
+                            Double tv = 0.0;
+                            if(db.getJYJE() != null && !db.getJYJE().equals("")){
+                               tv = Double.parseDouble(db.getJYJE());
+                            }
                             if (tv > 0) {
                                 if (tv > perMinMoney) {
                                     jeJIN += tv;
@@ -334,7 +342,10 @@ public class CalcController {
                         }
                         if(!isIn){
                             saveBankList.add(db);
-                            Double tv = Double.parseDouble(db.getJYJE());
+                            Double tv = 0.0;
+                            if(db.getJYJE() != null && !db.getJYJE().equals("")){
+                                tv = Double.parseDouble(db.getJYJE());
+                            }
                             if (tv > 0) {
                                 if (tv > perMinMoney) {
                                     jeJIN += tv;
@@ -349,7 +360,11 @@ public class CalcController {
                         }
                     }
                     for (DataBank db : zd.get(k)) {
-                        Double tv = Double.parseDouble(db.getJYJE());
+                        // Double tv = Double.parseDouble(db.getJYJE());
+                        Double tv = 0.0;
+                        if(db.getJYJE() != null && !db.getJYJE().equals("")){
+                            tv = Double.parseDouble(db.getJYJE());
+                        }
                         if (tv > 0) {
                             if (tv > perMinMoney) {
                                 jeJIN += tv;
