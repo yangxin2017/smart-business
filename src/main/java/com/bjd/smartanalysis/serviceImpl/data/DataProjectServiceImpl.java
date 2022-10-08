@@ -11,6 +11,8 @@ import com.bjd.smartanalysis.service.data.DataProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DataProjectServiceImpl extends ServiceImpl<DataProjectMapper, DataProject> implements DataProjectService {
     @Autowired
@@ -35,6 +37,22 @@ public class DataProjectServiceImpl extends ServiceImpl<DataProjectMapper, DataP
         QueryWrapper<DataProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("name", name);
         queryWrapper.eq("group_id", groupId);
+        projectPage = mapper.selectPage(projectPage, queryWrapper);
+
+        PageData<DataProject> page = new PageData<>();
+        page.setTotal(projectPage.getTotal());
+        page.setData(projectPage.getRecords());
+        return page;
+    }
+
+    @Override
+    public PageData<DataProject> GetProjects(List<Integer> ids, String name, Integer pageIndex, Integer pageSize) {
+        IPage<DataProject> projectPage = new Page<>(pageIndex, pageSize);
+        QueryWrapper<DataProject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("name", name);
+        if(ids.size() > 0) {
+            queryWrapper.in("id", ids);
+        }
         projectPage = mapper.selectPage(projectPage, queryWrapper);
 
         PageData<DataProject> page = new PageData<>();

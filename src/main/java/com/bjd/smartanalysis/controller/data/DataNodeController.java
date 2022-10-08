@@ -55,42 +55,52 @@ public class DataNodeController {
             node.put("sfzh", rydzda.getSFZH());
             node.put("zy", rydzda.getZY());
             node.put("csrq", rydzda.getCSRQ());
+            node.put("zp", rydzda.getTXZP());
+            node.put("user", rydzda);
 
+            // 房产信息
             QueryWrapper <DataGaZrzybqgFdcq> fdcqQueryWrapper = new QueryWrapper<>();
             fdcqQueryWrapper.eq("project_id", projectId);
             fdcqQueryWrapper.eq("mc", rydzda.getXM());
             node.put("fdcq", fdcqService.list(fdcqQueryWrapper));
 
+            // 公司主要成员
             QueryWrapper <DataGaQydjxxZyry> qydjxxZyryQueryWrapper = new QueryWrapper<>();
             qydjxxZyryQueryWrapper.eq("project_id", projectId);
             qydjxxZyryQueryWrapper.eq("mc", rydzda.getXM());
             node.put("gs",zyryService.list(qydjxxZyryQueryWrapper));
 
+            // 亲属关系
             QueryWrapper <DataGaQsgx> qsgxQueryWrapper = new QueryWrapper<>();
             qsgxQueryWrapper.eq("project_id", projectId);
             qsgxQueryWrapper.ne("gx", "密切人").and(wrapper -> wrapper.eq("xm1", rydzda.getXM()).or().eq("xm2", rydzda.getXM()));
             node.put("qsgx", qsgxService.list(qsgxQueryWrapper));
 
+            // 密切人
             QueryWrapper <DataGaQsgx> mqrQueryWrapper = new QueryWrapper<>();
             mqrQueryWrapper.eq("project_id", projectId);
             mqrQueryWrapper.eq("gx", "密切人").and(wrapper -> wrapper.eq("xm1", rydzda.getXM()).or().eq("xm2", rydzda.getXM()));
             node.put("mqr", qsgxService.list(mqrQueryWrapper));
 
+            // 银行卡信息
             QueryWrapper <DataGaJrjgzhZhjbxx> zhjbxxQueryWrapper = new QueryWrapper<>();
             zhjbxxQueryWrapper.eq("project_id", projectId);
             zhjbxxQueryWrapper.eq("mc", rydzda.getXM());
             node.put("yhk", zhjbxxService.list(zhjbxxQueryWrapper));
 
+            // 抵押贷款
             QueryWrapper <DataGaZrzybqgDyq> dyqQueryWrapper = new QueryWrapper<>();
             dyqQueryWrapper.eq("project_id", projectId);
             dyqQueryWrapper.eq("mc", rydzda.getXM());
             node.put("dyq", dyqService.list(dyqQueryWrapper));
 
+            // 保险信息
             QueryWrapper <DataGaBxxxBxbdxx> bxxxBxbdxxQueryWrapper = new QueryWrapper<>();
             bxxxBxbdxxQueryWrapper.eq("project_id", projectId);
             bxxxBxbdxxQueryWrapper.eq("zrrdxmc", rydzda.getXM());
             node.put("bxbd", bxxxBxbdxxService.list(bxxxBxbdxxQueryWrapper));
 
+            // 证券
             QueryWrapper <DataGaZqxxCyxx> cyxxQueryWrapper = new QueryWrapper<>();
             cyxxQueryWrapper.eq("project_id", projectId);
             cyxxQueryWrapper.eq("xm", rydzda.getXM());

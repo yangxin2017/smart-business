@@ -42,6 +42,21 @@ public class DataGaJrjgzhZhjbxxServiceImpl extends ServiceImpl<DataGaJrjgzhZhjbx
     }
 
     @Override
+    public DataGaJrjgzhZhjbxx GetOne(Integer projectId, String xm, String kh) {
+        QueryWrapper<DataGaJrjgzhZhjbxx> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        if (xm != null && !xm.equals("")) {
+            queryWrapper.like("XM", xm);
+        }
+        if (kh != null && !kh.equals("")) {
+            queryWrapper.like("KH", kh);
+        }
+        return mapper.selectOne(queryWrapper);
+    }
+
+    @Override
     public DataGaJrjgzhZhjbxx GetPersonByName(Integer projectId, String xm) {
         QueryWrapper<DataGaJrjgzhZhjbxx> queryWrapper = new QueryWrapper<>();
         if (projectId != null) {

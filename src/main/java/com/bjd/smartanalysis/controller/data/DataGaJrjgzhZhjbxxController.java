@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Api(value = "金融机构账户-账户基本信息", tags = {"金融机构账户-账户基本信息"})
 @RequestMapping("jrjgzhZhjbxx")
@@ -54,6 +55,20 @@ public class DataGaJrjgzhZhjbxxController {
     public ResponseData UpdateData(@RequestBody DataGaJrjgzhZhjbxx body, Integer projectId){
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
         return controller.UpdateData(body);
+    }
+
+    @PostMapping("addlist")
+    @ApiOperation(value = "添加数据", notes = "添加数据")
+    public ResponseData AddData(@RequestBody List<DataGaJrjgzhZhjbxx> body, Integer projectId){
+        controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
+        for (DataGaJrjgzhZhjbxx jbxx: body) {
+            DataGaJrjgzhZhjbxx ex = service.GetOne(projectId, jbxx.getMC(), jbxx.getKH());
+            if (ex == null) {
+                jbxx.setProjectId(projectId);
+                controller.AddData(jbxx);
+            }
+        }
+        return ResponseData.OK(null);
     }
 
     @PostMapping("delete/{id}")

@@ -18,9 +18,13 @@ public class WebFIlter implements Filter {
         String url = request.getRequestURI();
         HttpSession session = request.getSession();
         String groupid = request.getHeader("groupid");
+        String userid = request.getHeader("userid");
 
         if (groupid != null && !groupid.equals("")) {
             session.setAttribute("groupid", groupid);
+        }
+        if (userid != null && !userid.equals("")) {
+            session.setAttribute("userid", userid);
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

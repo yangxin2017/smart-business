@@ -22,7 +22,7 @@ public class DataGaLkzsxx {
     @TableField("user_id")
     private Integer userId;
 
-    @ExcelProperty(value = "姓名")
+    @ExcelProperty(value = "姓名", index = 0)
     @TableField("XM")
     private String XM;
 

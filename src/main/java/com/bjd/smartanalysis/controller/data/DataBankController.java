@@ -177,7 +177,7 @@ public class DataBankController {
     @GetMapping("list")
     @ApiOperation(value = "获取数据列表", notes = "获取数据列表")
     //private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId, String mc,String zjhm,String cxkh,String jyje,String jydfmc,String jydfkh,String jydfzjhm) {
-    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId,String bfzh,String jydfzh, String mc,String jydfmc,String jyje,String jylx,String jysj,String fkdw) {
+    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId,String bfkh,String jydfkh,String bfzh,String jydfzh, String mc,String jydfmc,String jyje,String jylx,String jysj,String fkdw) {
         IPage<DataBank> page = new Page<>(pageIndex, pageSize);
         QueryWrapper<DataBank> queryWrapper = new QueryWrapper<>();
 
@@ -191,6 +191,13 @@ public class DataBankController {
         if(jydfzh != null && !jydfzh.isEmpty()) {
             queryWrapper.like("JYDFZH", jydfzh);
         }
+        if(bfkh != null && !bfkh.isEmpty()) {
+            queryWrapper.like("BFKH", bfkh);
+        }
+        if(jydfkh != null && !jydfkh.isEmpty()) {
+            queryWrapper.like("JYDFKH", jydfkh);
+        }
+
         if(jyje != null && !jyje.isEmpty()) {
             String[] jyjeArr = jyje.split("-");
             if(jyjeArr.length == 1) {

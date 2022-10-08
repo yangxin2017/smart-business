@@ -55,6 +55,22 @@ public class DataGaRydzdaServiceImpl extends ServiceImpl<DataGaRydzdaMapper, Dat
     }
 
     @Override
+    public DataGaRydzda GetPersonByName(Integer projectId, String xm, String sfzh) {
+        QueryWrapper<DataGaRydzda> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        if (xm != null && !xm.equals("")) {
+            queryWrapper.eq("XM", xm);
+        }
+        if (sfzh != null && !sfzh.equals("")) {
+            queryWrapper.eq("SFZH", sfzh);
+        }
+        queryWrapper.last("limit 1");
+        return mapper.selectOne(queryWrapper);
+    }
+
+    @Override
     //isExist
     public Boolean isExist(Integer projectId, DataGaRydzda dataGaRydzda) {
         QueryWrapper<DataGaRydzda> queryWrapper = new QueryWrapper<>();

@@ -73,6 +73,18 @@ public class DataGaRydzdaController {
         return controller.UpdateData(body);
     }
 
+    @PostMapping("add")
+    @ApiOperation(value = "添加数据", notes = "添加数据")
+    public ResponseData AddData(@RequestBody DataGaRydzda body, Integer projectId){
+        controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
+        DataGaRydzda ex = service.GetPersonByName(projectId, body.getXM(), body.getSFZH());
+        if (ex == null) {
+            body.setProjectId(projectId);
+            return controller.AddData(body);
+        }
+        return ResponseData.OK(null);
+    }
+
     @PostMapping("delete/{id}")
     @ApiOperation(value = "删除数据", notes = "删除数据")
     public ResponseData DeleteData(@PathVariable Integer id, Integer projectId){

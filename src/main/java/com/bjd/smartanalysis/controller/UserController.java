@@ -7,7 +7,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.bjd.smartanalysis.common.ResponseData;
 import com.bjd.smartanalysis.entity.sys.SysGroup;
 import com.bjd.smartanalysis.entity.sys.SysUser;
+import com.bjd.smartanalysis.entity.sys.SysUserGroup;
 import com.bjd.smartanalysis.service.sys.SysGroupService;
+import com.bjd.smartanalysis.service.sys.SysUserGroupService;
 import com.bjd.smartanalysis.service.sys.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +34,8 @@ public class UserController {
     private SysGroupService groupService;
     @Autowired
     private SysUserService userService;
+    @Autowired
+    private SysUserGroupService userGroupService;
 
     @PostMapping("sso")
     @ApiOperation(value = "单点登录", notes = "单点登录")
@@ -51,11 +55,13 @@ public class UserController {
             header.put("tenantID", tenandId.toString());
             header.put("TenantId", tenandId.toString());
             header.put("token", token);
+            header.put("Token", token);
 
             Map<String, Object> params = new HashMap<>();
             params.put("tenantId", tenandId);
             params.put("tenantID", tenandId);
             params.put("token", token);
+            params.put("Token", token);
             params.put("TenantId", tenandId);
 
             // String userurl = apiPath + "api/oauth/anyTenant/userInfo?token=" + tokenstr + "&tenantID=" + tenandId;
@@ -69,9 +75,9 @@ public class UserController {
                 String nickname = defUserInfo.getString("nickName");
                 String userName = defUserInfo.getString("username");
 
-                String groupurl = apiPath + "api/liangziyun/anyone/findAllUserGroup";
+                String groupurl = apiPath + "api/liangziyun/anyone/findUserGroup";
 
-                String resstr = HttpUtil.createPost(groupurl).addHeaders(header).form(params).execute().body();
+                String resstr = HttpUtil.createGet(groupurl).addHeaders(header).form(params).execute().body();
                 JSONObject obj = JSONObject.parseObject(resstr);
 
                 if(obj.getInteger("code") == 0) {
@@ -79,27 +85,38 @@ public class UserController {
 
                     Long comGroupId = -1l;
                     SysGroup group = null;
-                    Long groupId = Math.abs(RandomUtil.randomLong());
                     if(groupObj.size() > 0) {
-                        JSONObject gobj = groupObj.getJSONObject(0);
-                        comGroupId = gobj.getLong("id");
-                        group = groupService.GetGroupByComeGroupId(comGroupId);
-                        ////
-                        if (group == null) {
-                            group = new SysGroup();
-                            group.setComeGroupId(comGroupId);
-                            group.setGroupId(groupId);
-                            groupService.save(group);
-                        } else {
-                            groupId = group.getGroupId();
+                        for(int i=0;i<groupObj.size();i++) {
+                            Long groupId = Math.abs(RandomUtil.randomLong());
+                            JSONObject gobj = groupObj.getJSONObject(i);
+                            comGroupId = gobj.getLong("id");
+                            group = groupService.GetGroupByComeGroupId(comGroupId);
+                            ////
+                            if (group == null) {
+                                group = new SysGroup();
+                                group.setComeGroupId(comGroupId);
+                                group.setGroupId(groupId);
+                                groupService.save(group);
+                            } else {
+                                groupId = group.getGroupId();
+                            }
+                            // 保存用户和组的关系
+                            SysUserGroup sug = userGroupService.GetDataByUserAndGroup(userId, groupId);
+                            if(sug == null) {
+                                SysUserGroup sugsave = new SysUserGroup();
+                                sugsave.setGroupId(groupId);
+                                sugsave.setUserId(userId);
+                                userGroupService.save(sugsave);
+                            }
                         }
+
                     }
                     comUser = userService.getById(userId);
                     if (comUser == null) {
                         comUser = new SysUser();
                         comUser.setId(userId);
                         comUser.setTenandId(tenandId);
-                        comUser.setGroupId(groupId);
+                        comUser.setGroupId(0l);
                         comUser.setUsername(userName);
                         comUser.setPassword("******");
                         comUser.setNickname(nickname);

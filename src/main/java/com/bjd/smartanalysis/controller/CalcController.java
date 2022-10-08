@@ -59,6 +59,8 @@ public class CalcController {
     private DataGaBxxxBxbdxxService bxxxBxbdxxService;
     @Autowired
     private DataGaZqxxCyxxService cyxxService;
+    @Autowired
+    private DataGaQydjxxQyjbxxService qyjbxxService;
 
     private Double perMinMoney = 1000.0;
 
@@ -66,19 +68,36 @@ public class CalcController {
     @ApiOperation(value = "计算关系图", notes = "计算关系图")
     public ResponseData CalcRelation(Integer projectId) {
         List<DataGaRydzda> persons = rydzdaService.GetAllPersonList(projectId, "");
-        List<DataGaJgfrxx> companys = jgfrxxService.GetAllCompany(projectId);
+//        List<DataGaJgfrxx> companys = jgfrxxService.GetAllCompany(projectId);
         List<DataBank> banks = bankService.GetAllBanks(projectId);
+        List<DataGaQydjxxQyjbxx> qyjbxxes = qyjbxxService.GetAllQys(projectId);
+
         for(DataBank db: banks) {
             if(db.getJYJE() == null || db.getJYJE().equals("")) {
                 db.setJYYE("0");
             }
+            // 去除空格
+            db.setMC(db.getMC().trim());
+            db.setJYDFMC(db.getJYDFMC().trim());
+            db.setJYDFKH(db.getJYDFKH().trim());
+            db.setJYDFZH(db.getJYDFZH().trim());
         }
+        // 去除空格
+        for(DataGaRydzda p : persons) {
+            p.setXM(p.getXM().trim());
+        }
+        // 去除空格
+        for(DataGaQydjxxQyjbxx g: qyjbxxes) {
+            g.setMC(g.getMC().trim());
+            g.setQYJGMC(g.getQYJGMC().trim());
+        }
+
         ///////
         nodeService.RemoveByProjectId(projectId);
         lineService.RemoveByProjectId(projectId);
         resultService.RemoveByProjectId(projectId);
         ///////
-        CalcAndSaveNodeLine(persons, banks, companys, projectId);
+        CalcAndSaveNodeLine(persons, banks, qyjbxxes, projectId);
         ///////
 
 
@@ -91,7 +110,7 @@ public class CalcController {
     }
 
 
-    private void CalcAndSaveNodeLine(List<DataGaRydzda> persons, List<DataBank> banks, List<DataGaJgfrxx> companys, Integer projectId) {
+    private void CalcAndSaveNodeLine(List<DataGaRydzda> persons, List<DataBank> banks, List<DataGaQydjxxQyjbxx> qyjbxxes, Integer projectId) {
         Integer mbGroup = 0;
         Integer nodeGroup = 0;
 
@@ -127,6 +146,8 @@ public class CalcController {
 
             String mbrName = p.getXM();
             String nullName = "空";
+
+            // zd key 是 交易对方名称 和 目标人的集合
             Map<String, List<DataBank>> zd = GroupMbrBankInfo(banks, mbrName, nullName);
 
             Set<String> keys = zd.keySet();
@@ -146,7 +167,7 @@ public class CalcController {
                 // 自己给自己转账。。暂不处理
                 if (k.equals(p.getXM())) {
                 } else {
-                    JSONObject nodeInfo = GetNodeType(k, persons, companys);
+                    JSONObject nodeInfo = GetNodeType(k, persons, qyjbxxes);
                     Integer dnodeId = nodeInfo.getInteger("nodeId");//GetNameId(k, persons);
                     String dnodeType = nodeInfo.getString("nodeType");
                     ////判断人还是公司？？？？？？？？？？？？？
@@ -307,7 +328,7 @@ public class CalcController {
                 if (k.equals(p.getXM())) {
                 } else {
 //                    Integer ssNodeId = GetNameId(k, persons);
-                    JSONObject nodeInfo = GetNodeType(k, persons, companys);
+                    JSONObject nodeInfo = GetNodeType(k, persons, qyjbxxes);
                     Integer ssNodeId = nodeInfo.getInteger("nodeId");//GetNameId(k, persons);
                     String dnodeType = nodeInfo.getString("nodeType");
 
@@ -599,7 +620,7 @@ public class CalcController {
         return res;
     }
 
-    private JSONObject GetNodeType(String name, List<DataGaRydzda> persons, List<DataGaJgfrxx> companys) {
+    private JSONObject GetNodeType(String name, List<DataGaRydzda> persons, List<DataGaQydjxxQyjbxx> qyjbxxes) {
         JSONObject obj = new JSONObject();
         String nodeType = "NULL";
         Integer nodeId = null;
@@ -611,8 +632,8 @@ public class CalcController {
             }
         }
         if (nodeType.equals("NULL")) {
-            for (DataGaJgfrxx p : companys) {
-                if (name.trim().equals(p.getJGMC().trim())) {
+            for (DataGaQydjxxQyjbxx p : qyjbxxes) {
+                if (name.trim().equals(p.getQYJGMC().trim())) {
                     nodeType = "COMPANY";
                     nodeId = p.getId();
                     break;

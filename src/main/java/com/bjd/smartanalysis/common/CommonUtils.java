@@ -15,4 +15,15 @@ public class CommonUtils {
         }
         return groupid;
     }
+    public static Long GetUserId(HttpServletRequest request) {
+        Long userid = null;
+        HttpSession session = request.getSession();
+        if (session != null) {
+            Object uid = session.getAttribute("userid");
+            if (uid != null && !uid.equals("undefined")) {
+                userid = Long.parseLong(uid.toString());
+            }
+        }
+        return userid;
+    }
 }

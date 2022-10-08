@@ -42,6 +42,15 @@ public class DataGaQydjxxQyjbxxServiceImpl extends ServiceImpl<DataGaQydjxxQyjbx
     }
 
     @Override
+    public List<DataGaQydjxxQyjbxx> GetAllQys(Integer projectId) {
+        QueryWrapper<DataGaQydjxxQyjbxx> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        return mapper.selectList(queryWrapper);
+    }
+
+    @Override
     public DataGaQydjxxQyjbxx GetPersonByName(Integer projectId, String xm) {
         QueryWrapper<DataGaQydjxxQyjbxx> queryWrapper = new QueryWrapper<>();
         if (projectId != null) {

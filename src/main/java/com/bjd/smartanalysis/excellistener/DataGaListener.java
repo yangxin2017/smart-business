@@ -4,13 +4,11 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bjd.smartanalysis.entity.data.DataGaJrjgzhZhjbxx;
 import com.bjd.smartanalysis.entity.data.DataGaQsgx;
 import com.bjd.smartanalysis.entity.data.DataGaRydzda;
 import com.bjd.smartanalysis.entity.data.SysErrorView;
-import com.bjd.smartanalysis.service.data.DataBankService;
-import com.bjd.smartanalysis.service.data.DataGaQsgxService;
-import com.bjd.smartanalysis.service.data.DataGaRydzdaService;
-import com.bjd.smartanalysis.service.data.SysErrorViewService;
+import com.bjd.smartanalysis.service.data.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -53,10 +51,17 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
                 this.rydzdaService = (DataGaRydzdaService) service;
                 DataGaRydzda rydzda = (DataGaRydzda) o;
                 // 调用service方法
-                rydzdaService.isExist(projectId, rydzda);
-                if(!rydzdaService.isExist(projectId,(DataGaRydzda)o)){
+                // 如果姓名数据库中存在，那么更新数据的数据
+                DataGaRydzda ex = rydzdaService.GetPersonByName(projectId, rydzda.getXM());
+                if (ex != null) {
+                    rydzda.setSfMbr(ex.getSfMbr());
+                    rydzda.setSFZH(ex.getSFZH());
+                    rydzda.setId(ex.getId());
+                    rydzdaService.updateById(rydzda);
+                } else {
                     list.add(o);
                 }
+
             } else if (curClass.getName().equals("com.bjd.smartanalysis.entity.data.DataGaQsgx")) {
                 this.qsgxService = (DataGaQsgxService) service;
                 if(!qsgxService.isExist(projectId,(DataGaQsgx)o)){
@@ -74,7 +79,17 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
                     dataGaQsgx.setSFZH2(((DataGaQsgx) o).getSFZH2());
                     qsgxService.updateById(dataGaQsgx);
                 }
-            }else{
+            } else if (curClass.getName().equals("com.bjd.smartanalysis.entity.data.DataGaJrjgzhZhjbxx")) {
+                DataGaJrjgzhZhjbxxService ss = (DataGaJrjgzhZhjbxxService) service;
+                DataGaJrjgzhZhjbxx jbxx = (DataGaJrjgzhZhjbxx) o;
+                DataGaJrjgzhZhjbxx ex = ss.GetOne(projectId, jbxx.getMC(), jbxx.getKH());
+                if (ex != null) {
+                    jbxx.setId(ex.getId());
+                    ss.updateById(jbxx);
+                } else {
+                    list.add(o);
+                }
+            } else {
                 list.add(o);
             }
             /*list.add(o);*/

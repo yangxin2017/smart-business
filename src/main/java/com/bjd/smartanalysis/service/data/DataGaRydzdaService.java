@@ -11,6 +11,7 @@ public interface DataGaRydzdaService extends IService<DataGaRydzda> {
     public List<DataGaRydzda> GetAllPersonList(Integer projectId, String xm);
 
     public DataGaRydzda GetPersonByName(Integer projectId, String xm);
+    public DataGaRydzda GetPersonByName(Integer projectId, String xm, String sfzh);
     //isExist
     public Boolean isExist(Integer projectId,DataGaRydzda dataGaRydzda);
 }

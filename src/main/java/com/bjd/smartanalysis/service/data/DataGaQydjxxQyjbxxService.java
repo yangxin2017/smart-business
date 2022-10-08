@@ -9,5 +9,7 @@ public interface DataGaQydjxxQyjbxxService extends IService<DataGaQydjxxQyjbxx> 
     public List<DataGaQydjxxQyjbxx> GetAllPerson(String xm);
     public List<DataGaQydjxxQyjbxx> GetAllPersonList(Integer projectId, String xm);
 
+    public List<DataGaQydjxxQyjbxx> GetAllQys(Integer projectId);
+
     public DataGaQydjxxQyjbxx GetPersonByName(Integer projectId, String xm);
 }
