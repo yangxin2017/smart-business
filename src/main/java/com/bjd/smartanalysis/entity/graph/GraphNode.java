@@ -22,6 +22,12 @@ public class GraphNode {
     @TableField("node_type")
     private String nodeType;
 
+    @TableField("node_level")
+    private Integer nodeLevel;
+
+    @TableField("node_color")
+    private String nodeColor;
+
     @TableField("node_id")
     private Integer nodeId;
 

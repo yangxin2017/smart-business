@@ -15,6 +15,9 @@ public class GraphResult {
     @TableField("project_id")
     private Integer projectId;
 
+    @TableField("page_type")
+    private String pageType;
+
     @TableField("jsonstr")
     private String jsonstr;
 }

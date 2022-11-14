@@ -40,6 +40,7 @@ public class DataGaGsDjxxController {
     @ApiImplicitParams({@ApiImplicitParam(name = "file", value = "文件流对象", required = true, dataType = "__File")})
     private ResponseData UploadData(@RequestParam("file") MultipartFile file, Integer bid, Integer projectId) {
         controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
+
         return controller.UploadData(file, bid, DataGaGsDjxx.class);
     }
 

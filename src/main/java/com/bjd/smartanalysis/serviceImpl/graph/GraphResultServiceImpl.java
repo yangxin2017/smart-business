@@ -14,9 +14,10 @@ public class GraphResultServiceImpl extends ServiceImpl<GraphResultMapper, Graph
     private GraphResultMapper mapper;
 
     @Override
-    public GraphResult GetDataByProjectId(Integer projectId) {
+    public GraphResult GetDataByProjectId(Integer projectId, String pageType) {
         QueryWrapper<GraphResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("project_id", projectId);
+        queryWrapper.eq("page_type", pageType);
         queryWrapper.last("limit 1");
         return mapper.selectOne(queryWrapper);
     }

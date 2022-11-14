@@ -30,4 +30,7 @@ public class GraphLine {
 
     @TableField("relation_ids")
     private String relationIds;
+
+    @TableField("line_type")
+    private String lineType;
 }

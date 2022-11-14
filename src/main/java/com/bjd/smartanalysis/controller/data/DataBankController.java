@@ -177,7 +177,7 @@ public class DataBankController {
     @GetMapping("list")
     @ApiOperation(value = "获取数据列表", notes = "获取数据列表")
     //private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId, String mc,String zjhm,String cxkh,String jyje,String jydfmc,String jydfkh,String jydfzjhm) {
-    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId,String bfkh,String jydfkh,String bfzh,String jydfzh, String mc,String jydfmc,String jyje,String jylx,String jysj,String fkdw) {
+    private ResponseData GetList(Integer pageIndex, Integer pageSize, Integer projectId,String bfkh,String jydfkh,String bfzh,String jydfzh, String mc,String jydfmc,String jyje,String jylx,String sjysj,String ejysj,String fkdw, String prop, String order) {
         IPage<DataBank> page = new Page<>(pageIndex, pageSize);
         QueryWrapper<DataBank> queryWrapper = new QueryWrapper<>();
 
@@ -212,15 +212,34 @@ public class DataBankController {
         if(jylx != null && !jylx.isEmpty()) {
             queryWrapper.like("JYLX", jylx);
         }
-        if(jysj != null && !jysj.isEmpty()) {
-            queryWrapper.like("JYSJ", jysj);
+        if(sjysj != null && !sjysj.isEmpty()) {
+            queryWrapper.ge("JYSJ", sjysj);
+        }
+        if(ejysj != null && !ejysj.isEmpty()) {
+            queryWrapper.lt("JYSJ", ejysj);
         }
         if(fkdw != null && !fkdw.isEmpty()) {
             queryWrapper.like("FKDW", fkdw);
         }
+        if (prop != null && !prop.equals("")) {
+            if (order == null) {
+            } else if (order.equals("ascending")) {
+                queryWrapper.orderByAsc(prop.toUpperCase());
+            } else if (order.equals("descending")){
+                queryWrapper.orderByDesc(prop.toUpperCase());
+            }
+        }
 
         page = bankService.page(page, queryWrapper);
         return ResponseData.OK(page);
+    }
+
+    @PostMapping("add")
+    @ApiOperation(value = "添加数据", notes = "添加数据")
+    private ResponseData AddData(@RequestBody DataBank bank, Integer projectId) {
+        bank.setProjectId(projectId);
+        bankService.save(bank);
+        return ResponseData.OK(bank);
     }
 
     @PostMapping("update")

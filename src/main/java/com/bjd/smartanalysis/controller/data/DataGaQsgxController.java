@@ -10,6 +10,7 @@ import com.bjd.smartanalysis.service.DataFileService;
 import com.bjd.smartanalysis.service.DataTypeService;
 import com.bjd.smartanalysis.service.data.DataBankService;
 import com.bjd.smartanalysis.service.data.DataGaQsgxService;
+import com.bjd.smartanalysis.service.data.DataGaRydzdaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,6 +36,8 @@ public class DataGaQsgxController {
     private DataTypeService dataTypeService;
     @Autowired
     private DataFileService fileService;
+    @Autowired
+    private DataGaRydzdaService rydzdaService;
 
     private DataBaseController<DataGaQsgx> controller;
 
@@ -63,8 +66,45 @@ public class DataGaQsgxController {
     @PostMapping("add")
     @ApiOperation(value = "添加数据", notes = "添加数据")
     public ResponseData AddData(@RequestBody DataGaQsgx body, Integer projectId){
-        controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
-        return controller.AddData(body);
+        String xm1 = body.getXM1();
+        String xm2 = body.getXM2();
+        if (xm1 != null && !xm1.equals("") && xm2 != null && !xm2.equals("")) {
+            DataGaRydzda p1 = rydzdaService.GetPersonByName(projectId, xm1);
+            DataGaRydzda p2 = rydzdaService.GetPersonByName(projectId, xm2);
+            if (p1 != null && p2 != null) {
+                Boolean fxdx1 = p1.getSfFxdx();
+                Boolean mbr1 = p1.getSfMbr();
+
+                Boolean fxdx2 = p2.getSfFxdx();
+                Boolean mbr2 = p2.getSfMbr();
+
+                Boolean p1IMP = false;
+                Boolean p2IMP = false;
+
+                if(fxdx1 != null && fxdx1) {
+                    p1IMP = true;
+                }
+                if(mbr1 != null && mbr1) {
+                    p1IMP = true;
+                }
+                if(fxdx2 != null && fxdx2) {
+                    p2IMP = true;
+                }
+                if(mbr2 != null && mbr2) {
+                    p2IMP = true;
+                }
+
+                if (p1IMP && p2IMP) {
+                    return ResponseData.FAIL("两个人已经是目标人或者分析对象，不能成为密切人！");
+                } else {
+                    controller = new DataBaseController<>(service, dataTypeService, fileService, basePath, projectId);
+                    return controller.AddData(body);
+                }
+            } else {
+                return ResponseData.FAIL("关系人不存在！");
+            }
+        }
+        return ResponseData.FAIL("名称不能为空！");
     }
 
     @PostMapping("update")

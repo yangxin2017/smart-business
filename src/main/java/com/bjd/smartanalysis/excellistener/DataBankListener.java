@@ -2,6 +2,7 @@ package com.bjd.smartanalysis.excellistener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.bjd.smartanalysis.common.CommonUtils;
 import com.bjd.smartanalysis.entity.data.DataBank;
 import com.bjd.smartanalysis.service.data.DataBankService;
 
@@ -30,18 +31,21 @@ public class DataBankListener extends AnalysisEventListener<DataBank> {
             dataBank.setBFZH("空");
         }*/
         if(dataBank.getJDBZ()!=null){
-            if (dataBank.getJDBZ().equals("进")) {
+            if (dataBank.getJDBZ().equals("进") || dataBank.getJDBZ().equals("贷")) {
                 if (Float.parseFloat(dataBank.getJYJE()) >= 0) {
                     dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
                 } else {
                     dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE()) * -1));
                 }
-            } else if (dataBank.getJDBZ().equals("出")) {
+            } else if (dataBank.getJDBZ().equals("出") || dataBank.getJDBZ().equals("借")) {
                 if (Float.parseFloat(dataBank.getJYJE()) > 0) {
                     dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE()) * -1));
                 } else {
                     dataBank.setJYJE(String.valueOf(Float.parseFloat(dataBank.getJYJE())));
                 }
+                String jysj = dataBank.getJYSJ();
+                jysj = CommonUtils.DealTime(jysj);
+                dataBank.setJYSJ(jysj);
             } else {
             /*DataBank lastBank = null;
             // 获取bankList中最后一条BFKH为BFKH的数据

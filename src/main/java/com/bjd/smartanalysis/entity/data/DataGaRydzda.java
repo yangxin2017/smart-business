@@ -115,4 +115,7 @@ public class DataGaRydzda {
     @TableField("sf_mbr")
     private Boolean sfMbr;
 
+    @TableField("sf_fxdx")
+    private Boolean sfFxdx;
+
 }

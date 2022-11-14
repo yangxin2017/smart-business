@@ -42,4 +42,15 @@ public class DataGaQsgxServiceImpl extends ServiceImpl<DataGaQsgxMapper, DataGaQ
         }
         return mapper.selectList(queryWrapper);
     }
+
+    @Override
+    public DataGaQsgx GetQsgxByNames(Integer projectId, String xm) {
+        QueryWrapper<DataGaQsgx> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        queryWrapper.eq("XM1", xm).or().eq("XM2", xm);
+        queryWrapper.last("limit 1");
+        return mapper.selectOne(queryWrapper);
+    }
 }

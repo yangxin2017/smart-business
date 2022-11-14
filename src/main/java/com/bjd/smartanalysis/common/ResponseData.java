@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ResponseData {
     private Integer code;
-    private static Boolean success;
+    private Boolean success;
     private Object data;
     private String msg;
 
@@ -24,6 +24,7 @@ public class ResponseData {
 
     public static ResponseData FAIL(String msg) {
         ResponseData rd = new ResponseData();
+        rd.setSuccess(false);
         rd.setMsg(msg);
         return rd;
     }

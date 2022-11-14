@@ -137,6 +137,106 @@ public class DataNodeController {
         return ResponseData.OK(list);
     }
 
+    @GetMapping("fxdxlist")
+    @ApiOperation(value = "分析对象列表", notes = "分析对象列表")
+    public ResponseData GetFxdxList(Integer projectId) {
+        QueryWrapper<DataGaRydzda> queryWrapper = new QueryWrapper<>();
+        if(projectId != null){
+            queryWrapper.eq("project_id", projectId);
+        }
+        List list = new ArrayList();
+        queryWrapper.eq("sf_fxdx", 1);
+        List<DataGaRydzda> rydzdaList = rydzdaService.list(queryWrapper);
+
+        for(DataGaRydzda rydzda : rydzdaList){
+            JSONObject node = new JSONObject();
+            node.put("xm", rydzda.getXM());
+            node.put("xb", rydzda.getXB());
+            node.put("sfzh", rydzda.getSFZH());
+            node.put("zy", rydzda.getZY());
+            node.put("csrq", rydzda.getCSRQ());
+            node.put("zp", rydzda.getTXZP());
+            node.put("user", rydzda);
+
+            // 房产信息
+            QueryWrapper <DataGaZrzybqgFdcq> fdcqQueryWrapper = new QueryWrapper<>();
+            fdcqQueryWrapper.eq("project_id", projectId);
+            fdcqQueryWrapper.eq("mc", rydzda.getXM());
+            node.put("fdcq", fdcqService.list(fdcqQueryWrapper));
+
+            // 公司主要成员
+            QueryWrapper <DataGaQydjxxZyry> qydjxxZyryQueryWrapper = new QueryWrapper<>();
+            qydjxxZyryQueryWrapper.eq("project_id", projectId);
+            qydjxxZyryQueryWrapper.eq("mc", rydzda.getXM());
+            node.put("gs",zyryService.list(qydjxxZyryQueryWrapper));
+
+            // 亲属关系
+            QueryWrapper <DataGaQsgx> qsgxQueryWrapper = new QueryWrapper<>();
+            qsgxQueryWrapper.eq("project_id", projectId);
+            qsgxQueryWrapper.ne("gx", "密切人").and(wrapper -> wrapper.eq("xm1", rydzda.getXM()).or().eq("xm2", rydzda.getXM()));
+            node.put("qsgx", qsgxService.list(qsgxQueryWrapper));
+
+            // 密切人
+            QueryWrapper <DataGaQsgx> mqrQueryWrapper = new QueryWrapper<>();
+            mqrQueryWrapper.eq("project_id", projectId);
+            mqrQueryWrapper.eq("gx", "密切人").and(wrapper -> wrapper.eq("xm1", rydzda.getXM()).or().eq("xm2", rydzda.getXM()));
+            node.put("mqr", qsgxService.list(mqrQueryWrapper));
+
+            // 银行卡信息
+            QueryWrapper <DataGaJrjgzhZhjbxx> zhjbxxQueryWrapper = new QueryWrapper<>();
+            zhjbxxQueryWrapper.eq("project_id", projectId);
+            zhjbxxQueryWrapper.eq("mc", rydzda.getXM());
+            node.put("yhk", zhjbxxService.list(zhjbxxQueryWrapper));
+
+            // 抵押贷款
+            QueryWrapper <DataGaZrzybqgDyq> dyqQueryWrapper = new QueryWrapper<>();
+            dyqQueryWrapper.eq("project_id", projectId);
+            dyqQueryWrapper.eq("mc", rydzda.getXM());
+            node.put("dyq", dyqService.list(dyqQueryWrapper));
+
+            // 保险信息
+            QueryWrapper <DataGaBxxxBxbdxx> bxxxBxbdxxQueryWrapper = new QueryWrapper<>();
+            bxxxBxbdxxQueryWrapper.eq("project_id", projectId);
+            bxxxBxbdxxQueryWrapper.eq("zrrdxmc", rydzda.getXM());
+            node.put("bxbd", bxxxBxbdxxService.list(bxxxBxbdxxQueryWrapper));
+
+            // 证券
+            QueryWrapper <DataGaZqxxCyxx> cyxxQueryWrapper = new QueryWrapper<>();
+            cyxxQueryWrapper.eq("project_id", projectId);
+            cyxxQueryWrapper.eq("xm", rydzda.getXM());
+
+            List<DataGaZqxxCyxx> cyxxList = cyxxService.list(cyxxQueryWrapper);
+            List<DataGaZqxxCyxx> cyxxList2 = new ArrayList<>();
+            for(DataGaZqxxCyxx cyxx : cyxxList){
+                if(cyxxList2.size() == 0){
+                    cyxxList2.add(cyxx);
+                }else{
+                    boolean isExist = false;
+                    for(DataGaZqxxCyxx cyxx2 : cyxxList2){
+                        if(cyxx.getZQDM()!=null&&cyxx2.getZQDM()!=null&&cyxx.getZQDM().equals(cyxx2.getZQDM())){
+                            isExist = true;
+                            if(cyxx.getCYRQ().compareTo(cyxx2.getCYRQ()) > 0){
+                                cyxxList2.remove(cyxx2);
+                                cyxxList2.add(cyxx);
+                            }
+                        }else{
+                            isExist = false;
+                        }
+                    }
+                    if(!isExist){
+                        cyxxList2.add(cyxx);
+                    }
+                }
+            }
+            node.put("cyxx", cyxxList2);
+
+
+            list.add(node);
+        }
+
+        return ResponseData.OK(list);
+    }
+
     @GetMapping("allPeople")
     @ApiOperation(value = "获取所有人员", notes = "获取所有人员")
     public ResponseData GetAllPeople(Integer projectId) {
@@ -163,6 +263,7 @@ public class DataNodeController {
         for(DataGaRydzda rydzda : rydzdaList){
             if(idLists.contains(rydzda.getId())){
                 rydzda.setSfMbr(true);
+                rydzda.setSfFxdx(false);
             }else{
                 rydzda.setSfMbr(false);
             }
@@ -170,5 +271,38 @@ public class DataNodeController {
         }
 
         return ResponseData.OK("保存成功！");
+    }
+
+    @PostMapping("saveFxdx")
+    @ApiOperation(value = "保存分析对象人", notes = "保存分析对象人")
+    // 接收两个参数
+    public ResponseData SaveFxdx(@RequestBody JSONObject params) {
+        Integer projectId = params.getInteger("projectId");
+        List<Integer> idLists = params.getJSONArray("ids").toJavaList(Integer.class);
+
+        QueryWrapper<DataGaRydzda> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("project_id", projectId);
+        // 如果id在idLists中则将sf_mbr设置为1，否则设置为0
+
+        String msg = "";
+        List<DataGaRydzda> rydzdaList = rydzdaService.list(queryWrapper);
+        for(DataGaRydzda rydzda : rydzdaList){
+            if(idLists.contains(rydzda.getId())){
+                rydzda.setSfMbr(false);
+                rydzda.setSfFxdx(true);
+
+                DataGaQsgx gx = qsgxService.GetQsgxByNames(projectId, rydzda.getXM());
+                if (gx == null) {
+                    rydzdaService.updateById(rydzda);
+                } else {
+                    msg += rydzda.getXM() + " 已经是目标人或者密切人！\n";
+                }
+            }else{
+                rydzda.setSfFxdx(false);
+                rydzdaService.updateById(rydzda);
+            }
+        }
+
+        return ResponseData.OK(msg);
     }
 }

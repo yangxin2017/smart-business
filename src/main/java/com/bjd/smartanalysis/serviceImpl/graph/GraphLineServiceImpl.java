@@ -25,6 +25,41 @@ public class GraphLineServiceImpl extends ServiceImpl<GraphLineMapper, GraphLine
     }
 
     @Override
+    public List<GraphLine> GetLineList(Integer projectId, String lineType) {
+        QueryWrapper<GraphLine> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        if (lineType != null && !lineType.equals("")) {
+            queryWrapper.eq("line_type", lineType);
+        }
+        return mapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<GraphLine> GetLineListNOTSELF(Integer projectId) {
+        QueryWrapper<GraphLine> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        queryWrapper.ne("line_type", "SELF");
+        return mapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public GraphLine GetlineMod(Integer projectId, Integer sid, Integer eid, String name) {
+        QueryWrapper<GraphLine> queryWrapper = new QueryWrapper<>();
+        if (projectId != null) {
+            queryWrapper.eq("project_id", projectId);
+        }
+        queryWrapper.eq("sid", sid);
+        queryWrapper.eq("eid", eid);
+        queryWrapper.eq("name", name);
+        queryWrapper.last("limit 1");
+        return mapper.selectOne(queryWrapper);
+    }
+
+    @Override
     public void RemoveByProjectId(Integer projectId) {
         QueryWrapper<GraphLine> queryWrapper = new QueryWrapper<>();
         if (projectId != null) {

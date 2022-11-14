@@ -4,10 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.bjd.smartanalysis.entity.data.DataGaJrjgzhZhjbxx;
-import com.bjd.smartanalysis.entity.data.DataGaQsgx;
-import com.bjd.smartanalysis.entity.data.DataGaRydzda;
-import com.bjd.smartanalysis.entity.data.SysErrorView;
+import com.bjd.smartanalysis.entity.data.*;
 import com.bjd.smartanalysis.service.data.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,8 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
     private Integer projectId;
     private Integer eid;
     private SysErrorViewService errorViewService;
+
+    private boolean isGS = false;
 
     public DataGaListener(IService service, Integer projectId,Integer eid,SysErrorViewService errorViewService) {
         this.service = service;
@@ -89,6 +88,9 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
                 } else {
                     list.add(o);
                 }
+            } else if (curClass.getSimpleName().equals("DataGaGsDjxx")) {
+                isGS = true;
+                list.add(o);
             } else {
                 list.add(o);
             }
@@ -133,8 +135,38 @@ public class DataGaListener<T> extends AnalysisEventListener<T> {
                     }
                 }
             }else{
-                for (int i = 0; i < list.size(); i++) {
-                    saveList.add(list.get(i));
+
+                if(isGS) {
+                    if (list.size() > 1) {
+                        DataGaGsDjxx gs = (DataGaGsDjxx)list.get(0);
+
+                        if (gs != null) {
+                            if (list.size() > 2) {
+                                for (int i = 2; i < list.size(); i++) {
+                                    DataGaGsDjxx gsTMP = (DataGaGsDjxx)list.get(i);
+
+                                    DataGaGsDjxx gs1 = new DataGaGsDjxx();
+                                    gs1.setProjectId(gs.getProjectId());
+                                    gs1.setXM(gs.getXM());
+                                    gs1.setZJLX(gs.getZJLX());
+                                    gs1.setZJHM(gs.getZJHM());
+                                    gs1.setNSRSBH(gs.getNSRSBH());
+                                    gs1.setJZDZ(gs.getJZDZ());
+                                    gs1.setDZYX(gs.getDZYX());
+                                    gs1.setDHHM(gs.getDHHM());
+                                    gs1.setDWMC(gsTMP.getZJLX());
+                                    gs1.setZWMC(gsTMP.getZJHM());
+                                    saveList.add(gs1);
+                                }
+                            } else {
+                                saveList.add(gs);
+                            }
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < list.size(); i++) {
+                        saveList.add(list.get(i));
+                    }
                 }
             }
         }

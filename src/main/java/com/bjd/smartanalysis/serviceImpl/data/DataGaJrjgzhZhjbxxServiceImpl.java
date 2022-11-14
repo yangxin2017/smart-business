@@ -48,7 +48,7 @@ public class DataGaJrjgzhZhjbxxServiceImpl extends ServiceImpl<DataGaJrjgzhZhjbx
             queryWrapper.eq("project_id", projectId);
         }
         if (xm != null && !xm.equals("")) {
-            queryWrapper.like("XM", xm);
+            queryWrapper.like("MC", xm);
         }
         if (kh != null && !kh.equals("")) {
             queryWrapper.like("KH", kh);

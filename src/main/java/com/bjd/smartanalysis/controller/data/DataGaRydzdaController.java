@@ -7,9 +7,11 @@ import com.bjd.smartanalysis.common.ResponseData;
 import com.bjd.smartanalysis.common.UploadUtil;
 import com.bjd.smartanalysis.entity.DataFile;
 import com.bjd.smartanalysis.entity.DataType;
+import com.bjd.smartanalysis.entity.data.DataGaQsgx;
 import com.bjd.smartanalysis.entity.data.DataGaRydzda;
 import com.bjd.smartanalysis.service.DataFileService;
 import com.bjd.smartanalysis.service.DataTypeService;
+import com.bjd.smartanalysis.service.data.DataGaQsgxService;
 import com.bjd.smartanalysis.service.data.DataGaRydzdaService;
 import com.bjd.smartanalysis.service.data.SysErrorViewService;
 import io.swagger.annotations.Api;
@@ -40,6 +42,8 @@ public class DataGaRydzdaController {
     private DataGaRydzdaService service;
     @Autowired
     private SysErrorViewService errorViewService;
+    @Autowired
+    private DataGaQsgxService qsgxService;
 
     private DataBaseController<DataGaRydzda> controller;
 
@@ -108,11 +112,23 @@ public class DataGaRydzdaController {
 
     @PostMapping("updatembr")
     @ApiOperation(value = "更新目标人", notes = "更新目标人")
-    public ResponseData UpdateMBRData(Integer id, Boolean isMBR){
+    public ResponseData UpdateMBRData(Integer id, Boolean isMBR, Boolean isFxdx){
         DataGaRydzda user = service.getById(id);
         if(user != null) {
             user.setSfMbr(isMBR);
-            service.updateById(user);
+            user.setSfFxdx(isFxdx);
+            //////////////////////
+            if(isFxdx) {
+                Integer projectId = user.getProjectId();
+                DataGaQsgx gx = qsgxService.GetQsgxByNames(projectId, user.getXM());
+                if (gx == null) {
+                    service.updateById(user);
+                } else {
+                    return ResponseData.FAIL(user.getXM() + " 已经是目标人或者密切人！");
+                }
+            } else {
+                service.updateById(user);
+            }
         }
         return ResponseData.OK(user);
     }

@@ -19,17 +19,22 @@ public class GraphController {
     @Autowired
     private DataProjectService projectService;
 
+    private String pageTypeNormal = "NORMAL";
+    private String pageTypeSIMPLE = "SIMPLE";
+
     @PostMapping("save")
     @ApiOperation(value = "保存信息", notes = "保存信息")
     public ResponseData SaveInfo(@RequestBody GraphResult res) {
         Integer projectId = res.getProjectId();
+        String pageType = res.getPageType();
         DataProject project = projectService.getById(projectId);
         if (project != null) {
-            GraphResult result = resultService.GetDataByProjectId(projectId);
+            GraphResult result = resultService.GetDataByProjectId(projectId, pageType);
             if (result == null) {
                 result = new GraphResult();
                 result.setJsonstr(res.getJsonstr());
                 result.setProjectId(projectId);
+                result.setPageType(pageType);
                 resultService.save(result);
             }
         }
@@ -40,9 +45,10 @@ public class GraphController {
     @ApiOperation(value = "更新信息", notes = "更新信息")
     public ResponseData UpdateInfo(@RequestBody GraphResult res) {
         Integer projectId = res.getProjectId();
+        String pageType = res.getPageType();
         DataProject project = projectService.getById(projectId);
         if (project != null) {
-            GraphResult result = resultService.GetDataByProjectId(projectId);
+            GraphResult result = resultService.GetDataByProjectId(projectId, pageType);
             if (result != null) {
                 result.setJsonstr(res.getJsonstr());
                 resultService.updateById(result);
@@ -53,8 +59,8 @@ public class GraphController {
 
     @GetMapping("one")
     @ApiOperation(value = "获取项目信息", notes = "获取项目信息")
-    public ResponseData GetProjectInfo(Integer projectId) {
-        GraphResult result = resultService.GetDataByProjectId(projectId);
+    public ResponseData GetProjectInfo(Integer projectId, String pageType) {
+        GraphResult result = resultService.GetDataByProjectId(projectId, pageType);
         return ResponseData.OK(result);
     }
 }
